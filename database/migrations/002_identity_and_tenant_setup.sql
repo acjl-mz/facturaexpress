@@ -55,5 +55,13 @@ ALTER TABLE tenant_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_events ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON tenants,app_users,tenant_users,customers,items,audit_events FROM anon,authenticated;
+DO $
+BEGIN
+ IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN
+   REVOKE ALL ON tenants,app_users,tenant_users,customers,items,audit_events FROM anon;
+ END IF;
+ IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN
+   REVOKE ALL ON tenants,app_users,tenant_users,customers,items,audit_events FROM authenticated;
+ END IF;
+END $;
 COMMIT;

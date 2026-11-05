@@ -1,6 +1,2 @@
-import { NextResponse } from "next/server";
-
-// Health endpoint deliberately reports application readiness only, not fiscal certification.
-export async function GET() {
-  return NextResponse.json({ name: "FacturaExpress", status: "development", fiscalCertification: "not_verified", database: "not_connected", timestamp: new Date().toISOString() });
-}
+import {NextResponse} from "next/server";import {createClient} from "@/lib/supabase/server";
+export async function GET(){try{const s=await createClient();const {error}=await s.auth.getUser();return NextResponse.json({name:"FacturaExpress",status:"ready",backend:"supabase",auth:error?"unavailable":"reachable",fiscalCertification:"not_verified",timestamp:new Date().toISOString()},{status:error?503:200});}catch{return NextResponse.json({name:"FacturaExpress",status:"not_ready",backend:"supabase",fiscalCertification:"not_verified"},{status:503});}}

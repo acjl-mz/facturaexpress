@@ -4,35 +4,37 @@ Sistema de facturação para Moçambique, com prioridade à versão web e arquit
 
 ## Estado do produto
 
-**Fase inicial — fundação da versão web.** O sistema ainda não está certificado nem autorizado pela Autoridade Tributária de Moçambique. A utilização em produção para emissão de documentos fiscais depende da validação legal, técnica e dos procedimentos de autorização/certificação aplicáveis.
+**Fundação web em implementação.** O sistema ainda não está certificado nem autorizado pela Autoridade Tributária de Moçambique. A utilização em produção para emissão de documentos fiscais depende da validação legal, técnica e dos procedimentos de autorização/certificação aplicáveis.
 
-## Princípios
+## Arquitectura
 
 - Next.js App Router + TypeScript.
-- PostgreSQL como base de dados, sem dependência estrutural de Supabase.
-- Valores monetários em MZN e cálculos decimais no servidor.
+- Supabase como plataforma única de backend: PostgreSQL, Auth, Data API, RLS, Storage e Realtime.
+- A aplicação não utiliza ligação PostgreSQL directa, servidor de autenticação próprio, nem credenciais de base de dados no Vercel.
+- Valores monetários em MZN; regras fiscais versionadas e configuráveis.
 - Documentos emitidos imutáveis; correcções por documentos rectificativos.
-- Séries e sequências documentais controladas no servidor e por transacção.
-- Auditoria de operações críticas.
-- Preparação para fila de sincronização offline-first e exportações fiscais.
-- Regras fiscais versionadas e configuráveis, sem assumir taxas como permanentes.
+- Séries e sequências documentais controladas no servidor.
+- Auditoria de operações críticas e isolamento de dados por empresa através de RLS.
+- Preparação para operação offline-first e sincronização contínua.
 
 ## Desenvolvimento
 
-Requisitos: Node.js 22+, PostgreSQL 15+.
+Requisitos: Node.js 22+ e um projecto Supabase.
 
 ```bash
 npm install
 cp .env.example .env.local
-# configurar DATABASE_URL
+# configurar NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 npm run dev
 ```
+
+As tabelas, políticas RLS, funções e triggers são geridas no Supabase. Não configurar DATABASE_URL, PGHOST, PGUSER, PGPORT ou credenciais PostgreSQL no Vercel.
 
 ## Documentação
 
 - docs/LEGAL-COMPLIANCE-MZ.md — matriz legal e pontos pendentes de validação.
 - docs/ARCHITECTURE.md — arquitectura web/local e sincronização.
-- database/migrations/001_initial_schema.sql — esquema inicial PostgreSQL.
+- database/migrations/ — histórico de esquema SQL gerido no Supabase.
 
 ## Limitação legal importante
 

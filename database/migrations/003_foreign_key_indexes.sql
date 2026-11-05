@@ -1,0 +1,11 @@
+BEGIN;
+CREATE INDEX IF NOT EXISTS audit_events_actor_user_idx ON audit_events(actor_user_id);
+CREATE INDEX IF NOT EXISTS document_events_tenant_idx ON document_events(tenant_id);
+CREATE INDEX IF NOT EXISTS fiscal_document_lines_document_idx ON fiscal_document_lines(document_id);
+CREATE INDEX IF NOT EXISTS fiscal_document_lines_item_idx ON fiscal_document_lines(item_id);
+CREATE INDEX IF NOT EXISTS fiscal_documents_corrects_idx ON fiscal_documents(corrects_document_id);
+CREATE INDEX IF NOT EXISTS fiscal_documents_series_idx ON fiscal_documents(series_id);
+CREATE INDEX IF NOT EXISTS fiscal_documents_tenant_customer_idx ON fiscal_documents(tenant_id,customer_id);
+CREATE INDEX IF NOT EXISTS tax_rules_tenant_idx ON tax_rules(tenant_id);
+CREATE INDEX IF NOT EXISTS tenant_users_user_idx ON tenant_users(user_id);
+COMMIT;

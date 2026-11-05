@@ -1,3 +1,4 @@
+BEGIN;
 -- FacturaExpress initial schema (PostgreSQL)
 create extension if not exists pgcrypto;
 
@@ -157,3 +158,5 @@ create index idx_document_events_document on document_events(document_id,created
 
 -- Production hardening still required: enable RLS/policies or enforce tenant scope
 -- through a trusted server-side data access layer before exposing any database access.
+
+COMMIT;

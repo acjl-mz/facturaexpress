@@ -1,4 +1,3 @@
-"use client";
 import { NextResponse } from "next/server";
 
 // Health endpoint deliberately reports application readiness only, not fiscal certification.

@@ -1,0 +1,14 @@
+import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+const COOKIE_NAME="facturaexpress_session";
+const SESSION_SECONDS=60*60*8;
+function sessionKey(){const secret=process.env.SESSION_SECRET;if(!secret||secret.length<32)throw new Error("SESSION_SECRET deve ter pelo menos 32 caracteres.");return new TextEncoder().encode(secret);}
+export type SessionUser={id:string;email:string;fullName:string;tenantId:string;role:string;sessionVersion:number};
+export async function createSession(user:SessionUser){const token=await new SignJWT({email:user.email,fullName:user.fullName,tenantId:user.tenantId,role:user.role,sessionVersion:user.sessionVersion}).setProtectedHeader({alg:"HS256"}).setSubject(user.id).setIssuedAt().setExpirationTime(`${SESSION_SECONDS}s`).sign(sessionKey());const jar=await cookies();jar.set(COOKIE_NAME,token,{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"lax",path:"/",maxAge:SESSION_SECONDS});}
+export async function destroySession(){const jar=await cookies();jar.set(COOKIE_NAME,"",{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"lax",path:"/",maxAge:0});}
+export async function getSession():Promise<SessionUser|null>{try{const token=(await cookies()).get(COOKIE_NAME)?.value;if(!token)return null;const {payload}=await jwtVerify(token,sessionKey(),{algorithms:["HS256"]});if(!payload.sub||typeof payload.email!=="string"||typeof payload.fullName!=="string"||typeof payload.tenantId!=="string"||typeof payload.role!=="string"||typeof payload.sessionVersion!=="number")return null;const result=await db.query(`SELECT u.id,u.email,u.full_name,u.session_version,tm.tenant_id,tm.role FROM app_users u JOIN tenant_users tm ON tm.user_id=u.id JOIN tenants t ON t.id=tm.tenant_id WHERE u.id=$1 AND u.status='active' AND tm.tenant_id=$2 AND tm.role=$3 AND t.status='active' LIMIT 1`,[payload.sub,payload.tenantId,payload.role]);const u=result.rows[0];if(!u||u.session_version!==payload.sessionVersion)return null;return{id:u.id,email:u.email,fullName:u.full_name,tenantId:u.tenant_id,role:u.role,sessionVersion:u.session_version};}catch{return null;}}
+export async function requireSession(){const user=await getSession();if(!user)return{user:null,response:NextResponse.json({error:"Sessão inválida ou expirada. Inicie sessão novamente."},{status:401})};return{user,response:null};}
+export function hasRole(role:string,allowed:string[]){return allowed.includes(role);}
+export async function writeAudit(user:SessionUser,eventType:string,targetType:string,targetId:string|null=null,details:Record<string,unknown>={}){await db.query("INSERT INTO audit_events(tenant_id,actor_user_id,event_type,target_type,target_id,details) VALUES($1,$2,$3,$4,$5,$6::jsonb)",[user.tenantId,user.id,eventType,targetType,targetId,JSON.stringify(details)]);}

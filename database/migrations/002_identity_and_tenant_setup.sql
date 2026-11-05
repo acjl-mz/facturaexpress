@@ -4,11 +4,6 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS tax_regime text;
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS activity text;
-ALTER TABLE tenants ADD COLUMN IF NOT EXISTS nuit varchar(20);
-ALTER TABLE tenants ADD COLUMN IF NOT EXISTS address text;
-ALTER TABLE tenants ADD COLUMN IF NOT EXISTS email text;
-ALTER TABLE tenants ADD COLUMN IF NOT EXISTS phone text;
-ALTER TABLE tenants ADD COLUMN IF NOT EXISTS trade_name text;
 ALTER TABLE tenants ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
 
 CREATE TABLE IF NOT EXISTS app_users (
@@ -23,13 +18,9 @@ CREATE TABLE IF NOT EXISTS app_users (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS app_users_email_lower_uq ON app_users(lower(email));
 
-CREATE TABLE IF NOT EXISTS tenant_users (
- tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE RESTRICT,
- user_id uuid NOT NULL REFERENCES app_users(id) ON DELETE RESTRICT,
- role text NOT NULL CHECK(role IN ('owner','admin','issuer','viewer','accountant')),
- created_at timestamptz NOT NULL DEFAULT now(),
- PRIMARY KEY(tenant_id,user_id)
-);
+ALTER TABLE tenant_users
+ ADD CONSTRAINT tenant_users_app_user_fk
+ FOREIGN KEY (user_id) REFERENCES app_users(id) ON DELETE RESTRICT;
 
 CREATE TABLE IF NOT EXISTS audit_events (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -47,21 +38,10 @@ ALTER TABLE customers ADD COLUMN IF NOT EXISTS tax_status text;
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
 ALTER TABLE items ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
 
--- Tables are accessed through the server-side PostgreSQL connection only.
--- Direct access through Supabase's exposed API roles is denied.
-ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
-ALTER TABLE app_users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tenant_users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE audit_events ENABLE ROW LEVEL SECURITY;
-DO $
-BEGIN
- IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN
-   REVOKE ALL ON tenants,app_users,tenant_users,customers,items,audit_events FROM anon;
- END IF;
- IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname='authenticated') THEN
-   REVOKE ALL ON tenants,app_users,tenant_users,customers,items,audit_events FROM authenticated;
- END IF;
-END $;
+-- The application connects only through its private server-side PostgreSQL connection.
+-- The Supabase public API roles must not read or mutate these business tables.
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon, authenticated;
 COMMIT;

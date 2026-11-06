@@ -1,4 +1,6 @@
 -- Fase 4: pagamentos e recibos internos de recebimento.
+-- SECURITY DEFINER é intencional para executar a transacção atómica sem conceder INSERT directo.
+-- A função valida auth.uid(), associação activa à empresa, documento emitido, saldo e idempotência.
 -- Não emite recibo fiscal certificado nem altera a numeração fiscal.
 CREATE TABLE IF NOT EXISTS public.customer_payments (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -46,6 +48,12 @@ BEGIN
   RETURN v_existing.id;
  END IF;
  PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_document_id::text,0));
+ -- Revalidar a idempotência depois do lock para cobrir pedidos concorrentes.
+ SELECT * INTO v_existing FROM public.customer_payments WHERE tenant_id=v_tenant_id AND local_operation_id=p_client_operation_id;
+ IF FOUND THEN
+  IF v_existing.document_id<>p_document_id OR v_existing.amount<>p_amount OR v_existing.payment_method<>p_payment_method THEN RAISE EXCEPTION 'O identificador da operação já foi utilizado com outros dados.'; END IF;
+  RETURN v_existing.id;
+ END IF;
  SELECT d.status,d.document_number,d.grand_total,d.withholding_total INTO v_status,v_doc_number,v_grand_total,v_withholding
  FROM public.fiscal_documents d WHERE d.id=p_document_id AND d.tenant_id=v_tenant_id FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'Documento não encontrado nesta empresa.'; END IF;

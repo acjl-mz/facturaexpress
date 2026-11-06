@@ -52,3 +52,12 @@
 - A emissão definitiva exige decisão formal sobre certificação/autorização do FacturaExpress, aprovação dos modelos, regras de numeração, arquivo, auditoria, cópias e correcções.
 - A versão local/offline não pode atribuir números fiscais definitivos sem mecanismo autorizado de controlo de séries e prevenção de duplicados.
 
+
+
+## Fase 4 — recebimentos e comprovativos internos
+
+- O módulo de pagamentos regista recebimentos associados exclusivamente a documentos com estado fiscal previamente emitido e número documental atribuído. Não aceita rascunhos nem documentos sem numeração.
+- Os recebimentos podem ser parciais e sucessivos; a liquidação é calculada sobre o total do documento, deduzidas retenções registadas e pagamentos anteriores. O saldo não pode tornar-se negativo.
+- A operação é transaccional, bloqueia concorrência por documento e utiliza identificador idempotente para evitar duplicação em reenvios.
+- A referência PG-INT é exclusivamente interna. O comprovativo produzido pelo módulo não é recibo fiscal certificado, não substitui um recibo legalmente exigível e não deve ser apresentado como documento fiscal emitido.
+- A emissão de recibos fiscais, a numeração/séries legais, a comunicação à AT e os requisitos de certificação permanecem bloqueados até validação formal dos requisitos aplicáveis.

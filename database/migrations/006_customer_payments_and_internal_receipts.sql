@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS public.customer_payments (
 );
 CREATE INDEX IF NOT EXISTS idx_customer_payments_tenant_date ON public.customer_payments(tenant_id,received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_customer_payments_document ON public.customer_payments(tenant_id,document_id,received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_customer_payments_document_fk ON public.customer_payments(document_id);
 ALTER TABLE public.customer_payments ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS customer_payments_select_member ON public.customer_payments;
 CREATE POLICY customer_payments_select_member ON public.customer_payments FOR SELECT TO authenticated USING (private.is_tenant_member(tenant_id));

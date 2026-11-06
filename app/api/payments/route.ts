@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from "next/server";
-import {getSession,writeAudit} from "@/lib/auth";
+import {getSession} from "@/lib/auth";
 import {createClient} from "@/lib/supabase/server";
 const methods=["cash","bank_transfer","mobile_money","pos","cheque","other"];
 export async function GET(){const u=await getSession();if(!u)return NextResponse.json({error:"Sessão inválida."},{status:401});const s=await createClient();
@@ -14,5 +14,5 @@ export async function GET(){const u=await getSession();if(!u)return NextResponse
 export async function POST(req:NextRequest){const u=await getSession();if(!u)return NextResponse.json({error:"Sessão inválida."},{status:401});if(!["owner","admin","issuer","accountant"].includes(u.role))return NextResponse.json({error:"Não tem permissão para registar recebimentos."},{status:403});
  try{const b=await req.json();const amount=Number(b.amount);if(typeof b.documentId!=="string"||!Number.isFinite(amount)||amount<=0||Math.round(amount*100)!==amount*100||!methods.includes(b.paymentMethod))return NextResponse.json({error:"Verifique a factura, o valor e o meio de pagamento."},{status:400});
  const operationId=String(b.operationId||crypto.randomUUID());const s=await createClient();const {data,error}=await s.rpc("register_customer_payment",{p_document_id:b.documentId,p_amount:amount,p_payment_method:b.paymentMethod,p_payment_reference:String(b.reference||""),p_notes:String(b.notes||""),p_received_at:b.receivedAt||new Date().toISOString(),p_client_operation_id:operationId});
- if(error)return NextResponse.json({error:error.message},{status:400});await writeAudit(u,"payment.registered","customer_payment",data,{document_id:b.documentId,amount,payment_method:b.paymentMethod});return NextResponse.json({id:data,message:"Recebimento registado. Foi criado um comprovativo interno, não fiscal."},{status:201});
+ if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({id:data,message:"Recebimento registado. Foi criado um comprovativo interno, não fiscal."},{status:201});
  }catch{return NextResponse.json({error:"Não foi possível registar o recebimento."},{status:400});}}

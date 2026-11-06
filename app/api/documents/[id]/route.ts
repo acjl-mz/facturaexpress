@@ -1,2 +1,15 @@
-import {NextRequest,NextResponse} from "next/server";import {getSession} from "@/lib/auth";import {createClient} from "@/lib/supabase/server";
-export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>}){const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});const {id}=await params;const s=await createClient();const {data,error}=await s.from("fiscal_documents").select("id,tenant_id,document_type,document_number,status,issue_date,due_date,currency,subtotal,discount_total,tax_total,withholding_total,grand_total,notes,created_at,customers(name,nuit,address)").eq("tenant_id",u.tenantId).eq("id",id).single();if(error||!data)return NextResponse.json({error:"Documento não encontrado."},{status:404});const {data:lines,error:le}=await s.from("fiscal_document_lines").select("id,description,quantity,unit,unit_price,discount_amount,tax_code,tax_rate,taxable_amount,tax_amount,line_total").eq("document_id",id);if(le)return NextResponse.json({error:"Não foi possível consultar as linhas."},{status:500});return NextResponse.json({document:data,lines:lines??[]});}
+import {NextRequest,NextResponse} from "next/server";
+import {getSession} from "@/lib/auth";
+import {createClient} from "@/lib/supabase/server";
+export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>}){
+ const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});
+ const {id}=await params;const s=await createClient();
+ const {data:doc,error}=await s.from("fiscal_documents").select("id,tenant_id,document_type,document_number,status,issue_date,due_date,currency,subtotal,discount_total,tax_total,withholding_total,grand_total,notes,created_at,customers(name,nuit,address,email,phone)").eq("tenant_id",u.tenantId).eq("id",id).single();
+ if(error||!doc)return NextResponse.json({error:"Documento não encontrado."},{status:404});
+ const [{data:lines,error:le},{data:tenant,error:te}]=await Promise.all([
+  s.from("fiscal_document_lines").select("id,description,quantity,unit,unit_price,discount_amount,tax_code,tax_rate,taxable_amount,tax_amount,line_total").eq("document_id",id).order("id"),
+  s.from("tenants").select("legal_name,trade_name,nuit,address,email,phone,currency").eq("id",u.tenantId).single()
+ ]);
+ if(le||te)return NextResponse.json({error:"Não foi possível carregar todos os dados do documento."},{status:500});
+ return NextResponse.json({document:doc,lines:lines??[],tenant});
+}

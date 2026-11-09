@@ -28,3 +28,7 @@
 @media print{.receipt-paper{width:210mm;min-height:260mm;margin:0;box-shadow:none;padding:18mm 20mm}.receipt-stamp{print-color-adjust:exact;-webkit-print-color-adjust:exact}.receipt-amount,.receipt-issuer,.receipt-disclaimer{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 @media(max-width:800px){.payment-metrics{grid-template-columns:1fr}.payment-table-head{display:none}.payment-document-row{grid-template-columns:1fr 1fr;gap:9px}.payment-document-row>div{grid-column:1/-1}.receipt-paper{width:100%;min-height:0;padding:28px 20px}.receipt-stamp{top:12px;right:10px;font-size:7px}.receipt-details{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.payment-document-row{grid-template-columns:1fr 1fr}.receipt-details{grid-template-columns:1fr}.receipt-paper h1{font-size:18px}.receipt-stamp{position:static;display:inline-block;transform:none;margin:12px 0 0}}
+
+/* Fase 5 — Tesouraria */
+.treasury-account-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0 28px}.treasury-account{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff}.treasury-account>div{display:grid;gap:5px;min-width:0}.treasury-account small{color:#7d8ba0;font-size:10px}.treasury-account strong{font:800 18px Manrope;color:#253d60;margin-top:4px}.treasury-movements-head{margin-top:30px}.treasury-account-grid .empty{grid-column:1/-1}
+@media(max-width:600px){.treasury-account-grid{grid-template-columns:1fr}.treasury-account{padding:13px}}

@@ -1,0 +1,3 @@
+ALTER TABLE public.fiscal_documents ADD COLUMN IF NOT EXISTS invoice_template_id uuid;
+ALTER TABLE public.fiscal_documents ADD CONSTRAINT fiscal_documents_invoice_template_fk FOREIGN KEY (tenant_id,invoice_template_id) REFERENCES public.invoice_templates(tenant_id,id) ON DELETE SET NULL (invoice_template_id);
+CREATE INDEX IF NOT EXISTS fiscal_documents_invoice_template_idx ON public.fiscal_documents(tenant_id,invoice_template_id) WHERE invoice_template_id IS NOT NULL;

@@ -1,5 +1,5 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useState,type CSSProperties} from "react";
 import {useParams,useRouter} from "next/navigation";
 import {ArrowLeft,Download,Printer,ShieldAlert} from "lucide-react";
 import {amountInWords} from "@/lib/amount-in-words";
@@ -16,7 +16,7 @@ if(loading)return <main className="simple-page"><section className="simple-card"
 if(error||!data)return <main className="simple-page"><section className="simple-card"><p>{error||"Documento não encontrado."}</p><button className="secondary-action" onClick={()=>router.push("/documents")}>Voltar aos documentos</button></section></main>;
 const d=data.document,t=data.tenant,c=d.customers;const payableTotal=Math.max(0,Number(d.grand_total||0)-Number(d.withholding_total||0));const label=d.document_type==="FR"?"FACTURA-RECIBO":d.document_type==="FT"?"FACTURA":d.document_type;
 const template=data.template;const settings=template?.settings||{};const accent=settings.accentColor||"#244d88";return <main className="print-workspace"><div className="print-toolbar no-print"><button className="secondary-action" onClick={()=>router.push("/documents")}><ArrowLeft size={16}/> Documentos</button><div><button className="secondary-action" onClick={()=>window.print()}><Printer size={16}/> Imprimir</button><button className="auth-submit" onClick={()=>window.print()}><Download size={16}/> Exportar PDF</button></div></div>
-<div className="paper-a4" style={{"--invoice-accent":accent} as React.CSSProperties}><div className="paper-draft-watermark">RASCUNHO</div><div className="paper-inner">
+<div className="paper-a4" style={{"--invoice-accent":accent} as CSSProperties}><div className="paper-draft-watermark">RASCUNHO</div><div className="paper-inner">
 <div className="paper-top"><div className="issuer-block">{settings.showLogo&&settings.logoUrl?<img src={settings.logoUrl} alt="Logótipo" className="paper-template-logo"/>:<div className="paper-brand">Factura<span>Express</span></div>}<h2>{t.trade_name||t.legal_name}</h2><p>{t.legal_name}</p>{t.nuit&&<p><b>NUIT:</b> {t.nuit}</p>}{t.address&&<p>{t.address}</p>}{settings.showIssuerContacts!==false&&<>{t.phone&&<p><b>Telefone:</b> {t.phone}</p>}{t.email&&<p><b>E-mail:</b> {t.email}</p>}</>}</div><div className="document-meta"><div className="paper-doc-type">{label}</div><div className="paper-doc-number">{d.document_number||"POR NUMERAR"}</div><div><b>Data:</b> {date(d.issue_date||d.created_at)}</div><div><b>Vencimento:</b> {date(d.due_date)}</div><div><b>Moeda:</b> {d.currency||"MZN"}</div></div></div>
 <div className="paper-rule"/>
 <section className="paper-customer"><div className="paper-section-label">FACTURAR A</div><h3>{c?.name||"Consumidor final"}</h3>{c?.nuit&&<p><b>NUIT:</b> {c.nuit}</p>}{c?.address&&<p>{c.address}</p>}{settings.showCustomerContacts!==false&&<>{c?.email&&<p>{c.email}</p>}{c?.phone&&<p>{c.phone}</p>}</>}</section>

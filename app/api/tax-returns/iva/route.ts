@@ -13,11 +13,11 @@ export async function GET(req:NextRequest){
 }
 export async function POST(req:NextRequest){
  const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});
- if(!["owner","admin","accountant"].includes(u.role))return NextResponse.json({error:"Sem permissões para preparar declarações."},{status:403});
+ if(!["owner","admin"].includes(u.role))return NextResponse.json({error:"Sem permissões para preparar declarações."},{status:403});
  try{
   const b=await req.json();const year=Number(b.year),month=Number(b.month),inputCredit=Number(b.inputTaxCredit||0),priorCredit=Number(b.priorPeriodCredit||0);
   if(!validYear(year)||!Number.isInteger(month)||month<1||month>12||!Number.isFinite(inputCredit)||inputCredit<0||!Number.isFinite(priorCredit)||priorCredit<0)return NextResponse.json({error:"Período ou créditos inválidos."},{status:400});
-  const s=await createClient();const {data:profile,error:profileError}=await s.from("tenant_tax_profiles").select("regime_code,confirmation_status").eq("tenant_id",u.tenantId).maybeSingle();
+  const s=await createClient();const {data:existing,error:existingError}=await s.from("tax_return_periods").select("id,status").eq("tenant_id",u.tenantId).eq("tax_type","IVA").eq("tax_year",year).eq("tax_period",month).maybeSingle();if(existingError)throw existingError;if(existing&&existing.status!=="draft")return NextResponse.json({error:"Este período já foi revisto ou submetido e não pode ser recalculado. Registe uma rectificação através do fluxo próprio."},{status:409});const {data:profile,error:profileError}=await s.from("tenant_tax_profiles").select("regime_code,confirmation_status").eq("tenant_id",u.tenantId).maybeSingle();
   if(profileError||!profile||profile.regime_code!=="IVA_REGULAR"||profile.confirmation_status!=="confirmed")return NextResponse.json({error:"É necessário um perfil IVA normal confirmado para preparar esta declaração."},{status:400});
   const start=new Date(Date.UTC(year,month-1,1));const end=new Date(Date.UTC(year,month,1));
   const iso=(d:Date)=>d.toISOString().slice(0,10);const periodStart=iso(start),periodEnd=iso(new Date(end.getTime()-86400000));

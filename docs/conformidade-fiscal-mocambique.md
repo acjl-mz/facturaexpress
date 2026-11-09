@@ -1,6 +1,6 @@
 # FacturaExpress — Matriz de conformidade fiscal (Moçambique)
 
-**Estado da implementação:** Fase 8 — motor fiscal inicial implementado. A emissão fiscal efectiva permanece bloqueada até certificação/autorização e validação final dos fluxos.
+**Estado da implementação:** Fase 9 — área inicial de obrigações declarativas implementada. O motor fiscal e os mapas declarativos são ferramentas de apoio; a emissão e submissão fiscal efectiva permanecem bloqueadas até certificação/autorização e validação final dos fluxos.
 
 ## Diplomas-base identificados
 
@@ -23,7 +23,7 @@
 7. O cálculo ISPC permanece bloqueado quando faltam a confirmação documental da AT, o ano de referência ou quando existe factor de exclusão assinalado.
 8. A taxa de 5% exige evidência documental por linha.
 
-## Regras de desenho implementadas
+## Obrigações declarativas — Fase 9\n\n1. Criada área de apuramento mensal de IVA, com documentos emitidos do período como base de cálculo e snapshot dos documentos de origem.\n2. IVA suportado dedutível e crédito de períodos anteriores são campos introduzidos manualmente, exigindo comprovativos e revisão contabilística; não são inferidos automaticamente.\n3. O apuramento fica em rascunho e não representa o formulário oficial nem uma submissão à AT.\n4. O sistema bloqueia recálculo de períodos já revistos ou submetidos.\n5. As prévias trimestrais de ISPC passam a ser guardadas por empresa, ano e trimestre, com histórico e protecção de estados confirmados/declarados/pagos.\n6. O Modelo B, as retenções de IRPS/IRPC e a submissão electrónica permanecem por implementar e validar com os formulários e regulamentos oficiais vigentes.\n\n## Regras de desenho implementadas
 
 1. Rascunhos não recebem número fiscal nem data de emissão.
 2. A numeração é atribuída apenas dentro de uma transacção de emissão, com série activa e bloqueio concorrente.

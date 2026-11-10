@@ -11,8 +11,11 @@ export async function PATCH(req:NextRequest){
   const lines=b.lines.map((x:any)=>({item_id:x.itemId||null,description:String(x.description??"").trim(),quantity:Number(x.quantity),unit:String(x.unit||"UN"),unit_price:Number(x.unitPrice),discount_amount:Number(x.discount??0),tax_code:x.taxCode||null,tax_eligibility_reference:x.taxEligibilityReference||null,tax_eligibility_category:x.taxEligibilityCategory||null}));
   for(const l of lines){if(!l.description||!Number.isFinite(l.quantity)||l.quantity<=0||!Number.isFinite(l.unit_price)||l.unit_price<0||!Number.isFinite(l.discount_amount)||l.discount_amount<0)return NextResponse.json({error:"Verifique descrição, quantidade, preço e desconto das linhas."},{status:400});}
   const s=await createClient();
+  if(b.templateId){const {data:template,error:templateError}=await s.from("invoice_templates").select("id").eq("id",b.templateId).eq("tenant_id",u.tenantId).eq("is_active",true).maybeSingle();if(templateError||!template)return NextResponse.json({error:"Template inválido para esta empresa."},{status:400});}
   const {data,error}=await s.rpc("update_fiscal_document_draft",{p_document_id:id,p_customer_id:b.customerId||null,p_due_date:b.dueDate||null,p_notes:String(b.notes||""),p_lines:lines});
   if(error){console.error("Draft update RPC failed",error.message);return NextResponse.json({error:error.message},{status:400});}
+  const {error:templateUpdateError}=await s.from("fiscal_documents").update({invoice_template_id:b.templateId||null}).eq("id",id).eq("tenant_id",u.tenantId).eq("status","draft");
+  if(templateUpdateError){console.error("Draft template update failed",templateUpdateError.message);return NextResponse.json({error:"Rascunho actualizado, mas não foi possível guardar o modelo visual."},{status:500});}
   await writeAudit(u,"document.draft_updated","fiscal_document",id,{line_count:lines.length});
   return NextResponse.json({id:data,status:"draft",message:"Rascunho actualizado."});
  }catch(e){console.error(e);return NextResponse.json({error:"Não foi possível actualizar o rascunho."},{status:400});}

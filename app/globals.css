@@ -139,3 +139,26 @@
  .receipt-thermal .receipt-disclaimer{padding:8px;font-size:7px;line-height:1.4}
  .receipt-thermal footer{margin-top:12px;font-size:7px}
 }
+
+
+/* Extracto de conta corrente do cliente */
+.customer-list-main{flex:1;min-width:0}
+.customer-list-main b{display:block}.customer-list-main small{display:block}
+.statement-actions{display:flex;gap:8px;flex-wrap:wrap}
+.statement-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}
+.statement-metrics article{padding:13px;border:1px solid var(--line);border-radius:9px;background:#fbfcfe;min-width:0}
+.statement-metrics small{display:block;color:#8290a4;font-size:10px;margin-bottom:8px}
+.statement-metrics b{font:700 15px Manrope;color:#203858;overflow-wrap:anywhere}
+.statement-note{font-size:10px;color:#8996a8;line-height:1.5;margin-top:15px}
+.statement-table .document-row{width:100%;text-align:left}
+.customer-statement .simple-card{width:min(1120px,100%);margin:0 auto 16px}
+@media(max-width:720px){.statement-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.statement-actions{width:100%;margin-top:12px}}
+@media print{
+ body:has(.customer-statement){background:#fff!important}
+ .customer-statement{padding:0!important;background:#fff!important}
+ .customer-statement .simple-card{width:100%!important;max-width:none!important;border:0!important;box-shadow:none!important;padding:8mm!important;margin:0!important}
+ .customer-statement .statement-metrics{grid-template-columns:repeat(4,1fr)}
+ .customer-statement .statement-metrics article{break-inside:avoid}
+ .customer-statement .document-row{break-inside:avoid}
+ .customer-statement .statement-table .document-row{display:flex!important}
+}

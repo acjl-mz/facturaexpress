@@ -168,3 +168,12 @@
 .payment-overdue{color:#b45309!important;font-weight:700}
 .payment-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:760px){.payment-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Bulk 8 — emissão transaccional de Factura-Recibo */
+.fr-issue-panel{display:grid;gap:12px;min-width:min(100%,360px);max-width:520px;padding:16px;border:1px solid var(--border,#d8dee8);border-radius:12px;background:var(--card,#fff)}
+.fr-issue-panel>label{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--foreground,#172033)}
+.fr-issue-panel input,.fr-issue-panel select,.fr-issue-panel textarea{width:100%;min-height:40px;padding:9px 11px;border:1px solid var(--border,#d8dee8);border-radius:8px;background:var(--background,#fff);color:inherit;font:inherit}
+.fr-issue-panel textarea{min-height:76px;resize:vertical}
+.fr-issue-panel .draft-warning{margin:0}
+@media(max-width:640px){.fr-issue-panel{width:100%;max-width:100%}}

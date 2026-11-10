@@ -202,3 +202,34 @@
  .documents-pagination{justify-content:space-between}
  .document-row{gap:8px}
 }
+
+
+/* Fase de impressão — paginação A4 e rolos térmicos */
+@page{size:A4 portrait;margin:0}
+@page thermal{size:80mm auto;margin:3mm}
+@page receiptthermal{size:80mm auto;margin:3mm}
+@media print{
+ html,body{width:auto!important;min-width:0!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important}
+ body:has(.print-workspace){print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .print-workspace{display:block!important;width:100%!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important}
+ .paper-a4{display:block!important;box-sizing:border-box!important;width:210mm!important;min-width:210mm!important;max-width:210mm!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;box-shadow:none!important;transform:none!important;break-after:auto!important;page-break-after:auto!important;page: auto}
+ .paper-a4:not(.paper-thermal){page: auto}
+ .paper-a4 .paper-inner{box-sizing:border-box!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;padding:15mm 15mm 12mm!important}
+ .paper-a4 .paper-top{break-inside:avoid;page-break-inside:avoid}
+ .paper-a4 .paper-lines{width:100%!important;table-layout:fixed!important;border-collapse:collapse!important}
+ .paper-a4 .paper-lines thead{display:table-header-group!important}
+ .paper-a4 .paper-lines tfoot{display:table-footer-group!important}
+ .paper-a4 .paper-lines tr{break-inside:avoid!important;page-break-inside:avoid!important}
+ .paper-a4 .paper-lines td{overflow-wrap:anywhere;word-break:normal}
+ .paper-a4 .paper-summary-area,.paper-a4 .paper-words,.paper-a4 .paper-notes,.paper-a4 .paper-signatures,.paper-a4 .paper-footer{break-inside:avoid!important;page-break-inside:avoid!important}
+ .paper-a4 .paper-draft-watermark{position:fixed!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .paper-thermal{page:thermal!important;width:74mm!important;min-width:74mm!important;max-width:74mm!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;box-shadow:none!important;break-after:auto!important;page-break-after:auto!important}
+ .paper-thermal .paper-inner{width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;padding:2mm!important;overflow:visible!important}
+ .paper-thermal .paper-lines{width:100%!important;table-layout:fixed!important}
+ .paper-thermal .paper-lines th,.paper-thermal .paper-lines td{overflow-wrap:anywhere;word-break:normal}
+ .paper-thermal .paper-lines tr{break-inside:avoid!important;page-break-inside:avoid!important}
+ .paper-thermal .paper-summary-area,.paper-thermal .paper-words,.paper-thermal .paper-notes,.paper-thermal .paper-signatures,.paper-thermal .paper-footer{break-inside:avoid!important;page-break-inside:avoid!important}
+ .receipt-paper{box-sizing:border-box!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .receipt-thermal{page:receiptthermal!important;width:74mm!important;min-width:74mm!important;max-width:74mm!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:2mm!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
+ .receipt-thermal .receipt-details{grid-template-columns:1fr!important}
+}

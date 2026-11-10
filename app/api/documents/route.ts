@@ -8,7 +8,7 @@ export async function PATCH(req:NextRequest){
  try{
   const b=await req.json();const id=String(b.id||"");
   if(!id||!Array.isArray(b.lines)||!b.lines.length||b.lines.length>100)return NextResponse.json({error:"Documento ou linhas inválidos."},{status:400});
-  const lines=b.lines.map((x:any)=>({item_id:x.itemId||null,description:String(x.description??"").trim(),quantity:Number(x.quantity),unit:String(x.unit||"UN"),unit_price:Number(x.unitPrice),discount_amount:Number(x.discount??0),tax_code:x.taxCode||null}));
+  const lines=b.lines.map((x:any)=>({item_id:x.itemId||null,description:String(x.description??"").trim(),quantity:Number(x.quantity),unit:String(x.unit||"UN"),unit_price:Number(x.unitPrice),discount_amount:Number(x.discount??0),tax_code:x.taxCode||null,tax_eligibility_reference:x.taxEligibilityReference||null,tax_eligibility_category:x.taxEligibilityCategory||null}));
   for(const l of lines){if(!l.description||!Number.isFinite(l.quantity)||l.quantity<=0||!Number.isFinite(l.unit_price)||l.unit_price<0||!Number.isFinite(l.discount_amount)||l.discount_amount<0)return NextResponse.json({error:"Verifique descrição, quantidade, preço e desconto das linhas."},{status:400});}
   const s=await createClient();
   const {data,error}=await s.rpc("update_fiscal_document_draft",{p_document_id:id,p_customer_id:b.customerId||null,p_due_date:b.dueDate||null,p_notes:String(b.notes||""),p_lines:lines});

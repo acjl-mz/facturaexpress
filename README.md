@@ -33,6 +33,8 @@ As tabelas, políticas RLS, funções e triggers são geridas no Supabase. Não 
 ## Documentação
 
 - docs/LEGAL-COMPLIANCE-MZ.md — matriz legal e pontos pendentes de validação.
+- docs/ROADMAP-DESENVOLVIMENTO.md — fases e critérios de conclusão do produto.
+- docs/DESENHO-FUNCIONAL.md — fluxo principal, ecrãs, regras e critérios de aceitação.
 - docs/ARCHITECTURE.md — arquitectura web/local e sincronização.
 - database/migrations/ — histórico de esquema SQL gerido no Supabase.
 

@@ -17,6 +17,9 @@ export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>
  const {data:originalDocument,error:originalError}=doc.corrects_document_id?await s.from("fiscal_documents").select("id,document_number,document_type,issue_date").eq("id",doc.corrects_document_id).eq("tenant_id",u.tenantId).maybeSingle():{data:null,error:null};
  if(originalError)return NextResponse.json({error:"Não foi possível carregar a referência do documento original."},{status:500});
  const paid=(payments??[]).reduce((sum:any,p:any)=>sum+Number(p.amount||0),0);
- const balance=Math.max(0,Number(doc.grand_total||0)-Number(doc.withholding_total||0)-paid);
- return NextResponse.json({document:doc,originalDocument,lines:lines??[],tenant,template,events:events??[],payments:payments??[],paymentSummary:{paid,balance}});
+ const {data:corrections,error:correctionError}=await s.from("fiscal_documents").select("id,document_type,document_number,grand_total,status").eq("tenant_id",u.tenantId).eq("corrects_document_id",id).in("status",["issued","paid","partially_paid"]);
+ if(correctionError)return NextResponse.json({error:"Não foi possível calcular o saldo após rectificações."},{status:500});
+ const correctionAdjustment=(corrections??[]).reduce((sum:any,c:any)=>sum+(c.document_type==="NC"?-1:1)*Number(c.grand_total||0),0);
+ const balance=Math.max(0,Number(doc.grand_total||0)-Number(doc.withholding_total||0)+correctionAdjustment-paid);
+ return NextResponse.json({document:doc,originalDocument,corrections:corrections??[],lines:lines??[],tenant,template,events:events??[],payments:payments??[],paymentSummary:{paid,balance,correctionAdjustment}});
 }

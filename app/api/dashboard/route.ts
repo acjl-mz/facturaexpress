@@ -30,10 +30,16 @@ export async function GET(){
  }
  const paidByDocument=new Map<string,number>();
  for(const payment of payments)paidByDocument.set(payment.document_id,(paidByDocument.get(payment.document_id)||0)+Number(payment.amount||0));
+ const adjustments=new Map<string,number>();
+ if(documentIds.length){
+  const {data:corrections,error}=await db.from("fiscal_documents").select("corrects_document_id,document_type,grand_total").eq("tenant_id",user.tenantId).in("corrects_document_id",documentIds).in("status",["issued","partially_paid","paid"]);
+  if(error)return NextResponse.json({error:"Não foi possível calcular rectificações."},{status:500});
+  for(const correction of corrections??[]){const delta=Number(correction.grand_total||0)*(correction.document_type==="NC"?-1:1);adjustments.set(correction.corrects_document_id,(adjustments.get(correction.corrects_document_id)||0)+delta);}
+ }
  const invoicedMonth=monthDocs.reduce((sum,d)=>sum+Number(d.grand_total||0),0);
- const outstanding=issued.reduce((sum,d)=>sum+Math.max(0,Number(d.grand_total||0)-Number(d.withholding_total||0)-(paidByDocument.get(d.id)||0)),0);
- const overdue=issued.filter(d=>d.due_date&&d.due_date<now.toISOString().slice(0,10)&&Number(d.grand_total||0)-Number(d.withholding_total||0)>(paidByDocument.get(d.id)||0));
- const recent=docs.slice(0,8).map(d=>({...d,paid_total:paidByDocument.get(d.id)||0,balance:Math.max(0,Number(d.grand_total||0)-Number(d.withholding_total||0)-(paidByDocument.get(d.id)||0))}));
+ const outstanding=issued.filter(d=>["FT","FR"].includes(d.document_type)).reduce((sum,d)=>sum+Math.max(0,Number(d.grand_total||0)-Number(d.withholding_total||0)+(adjustments.get(d.id)||0)-(paidByDocument.get(d.id)||0)),0);
+ const overdue=issued.filter(d=>["FT","FR"].includes(d.document_type)&&d.due_date&&d.due_date<now.toISOString().slice(0,10)&&Number(d.grand_total||0)-Number(d.withholding_total||0)+(adjustments.get(d.id)||0)>(paidByDocument.get(d.id)||0));
+ const recent=docs.slice(0,8).map(d=>({...d,paid_total:paidByDocument.get(d.id)||0,balance:Math.max(0,Number(d.grand_total||0)-Number(d.withholding_total||0)+(adjustments.get(d.id)||0)-(paidByDocument.get(d.id)||0))}));
  const paymentMonth=payments.filter(p=>p.received_at&&p.received_at>=monthStart&&p.received_at<nextMonth).reduce((sum,p)=>sum+Number(p.amount||0),0);
  return NextResponse.json({
   company:companyResult.data,

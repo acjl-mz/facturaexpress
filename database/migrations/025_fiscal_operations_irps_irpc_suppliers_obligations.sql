@@ -45,6 +45,7 @@ create table if not exists public.purchase_invoices (
  check(deductible_vat+non_deductible_vat<=vat_amount+0.01)
 );
 create index if not exists purchase_invoices_tenant_date_idx on public.purchase_invoices(tenant_id,issue_date desc);
+create index if not exists purchase_invoices_supplier_id_idx on public.purchase_invoices(supplier_id);
 create table if not exists public.tax_withholdings (
  id uuid primary key default gen_random_uuid(),
  tenant_id uuid not null references public.tenants(id) on delete restrict,

@@ -113,3 +113,29 @@
 .correction-actions textarea{min-height:38px;resize:vertical}
 .correction-actions small{grid-column:1/-1;color:#9a5b14;font-size:10px}
 @media(max-width:720px){.correction-actions{grid-template-columns:1fr}.correction-actions small{grid-column:auto}}
+
+
+/* Bulk 3 — impressão térmica do comprovativo interno */
+@page receiptthermal{size:80mm auto;margin:3mm}
+@media print{
+ body:has(.receipt-thermal){background:#fff!important}
+ .receipt-thermal{page:receiptthermal;width:74mm!important;min-width:74mm!important;min-height:0!important;height:auto!important;margin:0!important;padding:2mm!important;box-shadow:none!important;overflow:visible!important}
+ .receipt-thermal .receipt-stamp{position:static;display:inline-block;transform:none;margin:0 0 8px;font-size:7px;padding:4px 6px}
+ .receipt-thermal .receipt-brand{font-size:13px}
+ .receipt-thermal h1{font-size:15px!important;margin-top:10px!important}
+ .receipt-thermal .receipt-code{font-size:9px}
+ .receipt-thermal .receipt-issuer{margin-top:12px;padding:8px}
+ .receipt-thermal .receipt-issuer h2{font-size:10px}
+ .receipt-thermal .receipt-issuer p{font-size:8px}
+ .receipt-thermal .receipt-amount{margin:12px 0;padding:10px}
+ .receipt-thermal .receipt-amount small{font-size:7px}
+ .receipt-thermal .receipt-amount b{font-size:17px;margin-top:4px}
+ .receipt-thermal .receipt-details{grid-template-columns:1fr;gap:8px;margin-top:12px}
+ .receipt-thermal .receipt-details small{font-size:7px}
+ .receipt-thermal .receipt-details b{font-size:9px}
+ .receipt-thermal .receipt-notes{margin-top:12px;padding:8px}
+ .receipt-thermal .receipt-notes p{font-size:8px}
+ .receipt-thermal .receipt-signature{width:80%;margin:30px auto 12px;font-size:8px}
+ .receipt-thermal .receipt-disclaimer{padding:8px;font-size:7px;line-height:1.4}
+ .receipt-thermal footer{margin-top:12px;font-size:7px}
+}

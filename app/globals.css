@@ -233,3 +233,8 @@
  .receipt-thermal{page:receiptthermal!important;width:74mm!important;min-width:74mm!important;max-width:74mm!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:2mm!important;overflow:visible!important;box-shadow:none!important;break-inside:auto!important;page-break-inside:auto!important}
  .receipt-thermal .receipt-details{grid-template-columns:1fr!important}
 }
+
+@media print{
+ .receipt-paper:not(.receipt-thermal){width:210mm!important;min-height:0!important;height:auto!important;max-height:none!important;padding:18mm 20mm!important;overflow:visible!important;break-inside:auto!important;page-break-inside:auto!important}
+ .receipt-paper:not(.receipt-thermal) .receipt-issuer,.receipt-paper:not(.receipt-thermal) .receipt-amount,.receipt-paper:not(.receipt-thermal) .receipt-details,.receipt-paper:not(.receipt-thermal) .receipt-notes,.receipt-paper:not(.receipt-thermal) .receipt-signature,.receipt-paper:not(.receipt-thermal) .receipt-disclaimer,.receipt-paper:not(.receipt-thermal) footer{break-inside:avoid!important;page-break-inside:avoid!important}
+}

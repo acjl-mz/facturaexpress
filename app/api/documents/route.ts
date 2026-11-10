@@ -4,11 +4,13 @@ export async function GET(req:NextRequest){
  const params=req.nextUrl.searchParams;
  const q=(params.get("q")||"").trim().slice(0,80);
  const status=params.get("status")||"";
+ const type=params.get("type")||"";
  const from=params.get("from")||"";
  const to=params.get("to")||"";
  const s=await createClient();
  let query=s.from("fiscal_documents").select("id,document_type,document_number,status,issue_date,due_date,subtotal,discount_total,tax_total,grand_total,created_at,customers(name,nuit)").eq("tenant_id",u.tenantId).order("created_at",{ascending:false}).limit(250);
  if(status)query=query.eq("status",status);
+ if(type)query=query.eq("document_type",type);
  if(from)query=query.gte("created_at",from+"T00:00:00");
  if(to)query=query.lt("created_at",new Date(new Date(to+"T00:00:00").getTime()+86400000).toISOString());
  if(q){

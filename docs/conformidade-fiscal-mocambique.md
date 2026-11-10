@@ -56,3 +56,15 @@
 - Presidência da República — comunicado sobre a alteração do Código do IVA: https://www.presidencia.gov.mz/wp-content/uploads/2025/05/CI_PR-promulga-Lei-que-altera-o-Codigo-sobre-o-IVA.pdf
 
 > Este documento é uma matriz técnica de trabalho, não um parecer jurídico nem uma confirmação de homologação. A parametrização fiscal final deve ser confrontada com os diplomas integrais e instruções oficiais aplicáveis na data de cada operação.
+
+
+## Fase 10 — Operações fiscais complementares
+
+- Cadastro de fornecedores e registo de facturas de aquisição, com discriminação do IVA total, dedutível e não dedutível. A elegibilidade permanece sujeita a revisão documental.
+- Registo de retenções IRPS/IRPC por natureza do rendimento, beneficiário, taxa e fundamento legal. A aplicação não presume taxas.
+- Calendário de obrigações com prazos inseridos e confirmados pelo utilizador. Não são inventadas datas legais nem enviados alertas externos nesta fase.
+- Mapa anual consolidado de aquisições, retenções, apuramentos IVA/ISPC e obrigações, com exportação CSV.
+- Preparação de mapa anual de apoio ao Modelo B a partir dos apuramentos trimestrais. Não é o formulário oficial nem uma submissão.
+- As novas tabelas são isoladas por tenant e protegidas por RLS. As operações ficam associadas ao utilizador e registadas no trilho de auditoria.
+
+**Limites legais:** a Lei n.º 9/2025, Lei n.º 10/2025, Lei n.º 11/2025 e Lei n.º 12/2025 foram identificadas no BR n.º 248, Suplemento n.º 1, de 29.12.2025. As taxas e os prazos IRPS/IRPC dependem da natureza do rendimento, residência, beneficiário, eventuais convenções e regulamentos aplicáveis; por isso, os registos exigem taxa e fundamento legal confirmados. O calendário da AT e os formulários oficiais devem prevalecer sobre qualquer parametrização interna.

@@ -105,3 +105,11 @@
 .history-balance b{font-size:12px;color:#1e293b;text-align:right}
 .history-empty{padding:8px 0}
 @media(max-width:650px){.history-grid{grid-template-columns:1fr}.document-history{padding:14px;margin:14px auto}}
+
+
+.correction-actions{display:grid;grid-template-columns:auto minmax(220px,1fr) auto;gap:9px;align-items:end;padding:12px;border:1px solid #dce5ef;border-radius:9px;background:#f8fafc}
+.correction-actions label{display:grid;gap:5px;font-size:10px;color:#64748b}
+.correction-actions select,.correction-actions textarea{border:1px solid #d8e1eb;border-radius:7px;background:#fff;padding:8px;font:inherit;color:#24344b}
+.correction-actions textarea{min-height:38px;resize:vertical}
+.correction-actions small{grid-column:1/-1;color:#9a5b14;font-size:10px}
+@media(max-width:720px){.correction-actions{grid-template-columns:1fr}.correction-actions small{grid-column:auto}}

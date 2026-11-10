@@ -190,3 +190,15 @@
  body:has(.receipt-thermal){width:80mm!important;min-width:80mm!important;margin:0!important;padding:0!important}
  .receipt-thermal .receipt-amount-words{font-size:8px;line-height:1.4}
 }
+
+/* Bulk 10 — pesquisa documental e paginação */
+.documents-results-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 10px;color:var(--foreground,#203047);font-size:13px}
+.documents-results-heading small{color:#8290a4;font-size:11px}
+.documents-pagination{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px}
+.documents-pagination>span{min-width:64px;text-align:center;color:#64748b;font-size:12px;font-variant-numeric:tabular-nums}
+.documents-pagination button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:640px){
+ .documents-results-heading{align-items:flex-start;flex-direction:column;gap:4px}
+ .documents-pagination{justify-content:space-between}
+ .document-row{gap:8px}
+}

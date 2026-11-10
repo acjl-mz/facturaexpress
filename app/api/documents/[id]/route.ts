@@ -9,7 +9,9 @@ export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>
  const [{data:lines,error:le},{data:tenant,error:te},{data:template,error:templateError},{data:events,error:eventsError},{data:payments,error:paymentsError}]=await Promise.all([
   s.from("fiscal_document_lines").select("id,item_id,description,quantity,unit,unit_price,discount_amount,tax_code,tax_rate,tax_eligibility_reference,tax_eligibility_category,taxable_amount,tax_amount,line_total").eq("document_id",id).order("id"),
   s.from("tenants").select("legal_name,trade_name,nuit,address,email,phone,currency").eq("id",u.tenantId).single(),
-  doc.invoice_template_id?s.from("invoice_templates").select("id,name,settings").eq("id",doc.invoice_template_id).eq("tenant_id",u.tenantId).maybeSingle():Promise.resolve({data:null,error:null})
+  doc.invoice_template_id?s.from("invoice_templates").select("id,name,settings").eq("id",doc.invoice_template_id).eq("tenant_id",u.tenantId).maybeSingle():Promise.resolve({data:null,error:null}),
+  s.from("document_events").select("id,event_type,actor_id,payload,created_at").eq("document_id",id).eq("tenant_id",u.tenantId).order("created_at",{ascending:false}).limit(100),
+  s.from("customer_payments").select("id,internal_receipt_code,amount,payment_method,payment_reference,notes,received_at,created_by").eq("document_id",id).eq("tenant_id",u.tenantId).order("received_at",{ascending:false}).limit(100)
  ]);
  if(le||te||templateError)return NextResponse.json({error:"Não foi possível carregar todos os dados do documento."},{status:500});
  return NextResponse.json({document:doc,lines:lines??[],tenant,template});

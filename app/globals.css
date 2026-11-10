@@ -162,3 +162,9 @@
  .customer-statement .document-row{break-inside:avoid}
  .customer-statement .statement-table .document-row{display:flex!important}
 }
+
+
+/* Bulk 7 — condições comerciais e cobranças */
+.payment-overdue{color:#b45309!important;font-weight:700}
+.payment-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.payment-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}

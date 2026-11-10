@@ -62,8 +62,7 @@
 .print-format-control select{height:34px;border:1px solid #dce4ee;border-radius:7px;padding:0 8px;background:#fff;color:#344966;font-size:10px}
 .thermal-line-meta{display:block;font-size:8px;color:#77869a;margin-top:3px}
 @media print{
- body:has(.paper-thermal) @page{size:80mm auto;margin:3mm}
- .paper-thermal{width:74mm!important;min-width:74mm!important;min-height:0!important;height:auto!important;margin:0!important;box-shadow:none!important;overflow:visible!important}
+ .paper-thermal{page:thermal;width:74mm!important;min-width:74mm!important;min-height:0!important;height:auto!important;margin:0!important;box-shadow:none!important;overflow:visible!important}
  .paper-thermal .paper-inner{min-height:0!important;height:auto!important;padding:2mm!important}
  .paper-thermal .paper-top{display:block!important}
  .paper-thermal .issuer-block{max-width:100%!important}
@@ -88,3 +87,5 @@
  .paper-thermal .thermal-hide{display:none!important}
 }
 @media(max-width:800px){.print-toolbar{flex-wrap:wrap}.print-toolbar>div{flex-wrap:wrap}.print-format-control{margin:4px 0}}
+
+@page thermal{size:80mm auto;margin:3mm}

@@ -177,3 +177,16 @@
 .fr-issue-panel textarea{min-height:76px;resize:vertical}
 .fr-issue-panel .draft-warning{margin:0}
 @media(max-width:640px){.fr-issue-panel{width:100%;max-width:100%}}
+
+
+/* Bulk 9 — melhoria do comprovativo de recebimento */
+.receipt-amount-words{display:block;max-width:100%;margin:8px auto 0;color:#536984;font-size:10px;line-height:1.5;text-transform:capitalize}
+.receipt-paper{break-inside:avoid}
+@media print{
+ .receipt-paper{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .receipt-amount-words{font-size:9px}
+}
+@media print{
+ body:has(.receipt-thermal){width:80mm!important;min-width:80mm!important;margin:0!important;padding:0!important}
+ .receipt-thermal .receipt-amount-words{font-size:8px;line-height:1.4}
+}

@@ -41,3 +41,17 @@
 @media(max-width:650px){.report-metrics{grid-template-columns:1fr}.report-net{grid-template-columns:1fr}.report-filters,.reconcile-toolbar{align-items:stretch;flex-direction:column}.reconcile-row{grid-template-columns:1fr 1fr}.reconcile-match{grid-column:1/-1}.template-grid{grid-template-columns:1fr}}
 
 .success-message{margin:12px 0;padding:11px 13px;border-radius:8px;background:#edf8f2;color:#24734f;font-size:11px}
+
+/* Bulk 1 — impressão multipágina e continuidade da tabela */
+@media print{
+ .paper-a4{height:auto!important;min-height:0!important;overflow:visible!important;break-after:auto!important;page-break-after:auto!important}
+ .paper-inner{height:auto!important;min-height:0!important}
+ .paper-lines{width:100%;table-layout:auto}
+ .paper-lines thead{display:table-header-group}
+ .paper-lines tfoot{display:table-footer-group}
+ .paper-lines tr{break-inside:avoid;page-break-inside:avoid}
+ .paper-lines td,.paper-lines th{break-inside:avoid}
+ .paper-summary-area,.paper-words,.paper-notes,.paper-signatures{break-inside:avoid;page-break-inside:avoid}
+ .paper-footer{break-inside:avoid;page-break-inside:avoid}
+}
+.document-row .draft-state{white-space:nowrap}

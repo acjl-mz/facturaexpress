@@ -13,6 +13,8 @@ export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>
   s.from("document_events").select("id,event_type,actor_id,payload,created_at").eq("document_id",id).eq("tenant_id",u.tenantId).order("created_at",{ascending:false}).limit(100),
   s.from("customer_payments").select("id,internal_receipt_code,amount,payment_method,payment_reference,notes,received_at,created_by").eq("document_id",id).eq("tenant_id",u.tenantId).order("received_at",{ascending:false}).limit(100)
  ]);
- if(le||te||templateError)return NextResponse.json({error:"Não foi possível carregar todos os dados do documento."},{status:500});
- return NextResponse.json({document:doc,lines:lines??[],tenant,template});
+ if(le||te||templateError||eventsError||paymentsError)return NextResponse.json({error:"Não foi possível carregar todos os dados do documento."},{status:500});
+ const paid=(payments??[]).reduce((sum:any,p:any)=>sum+Number(p.amount||0),0);
+ const balance=Math.max(0,Number(doc.grand_total||0)-Number(doc.withholding_total||0)-paid);
+ return NextResponse.json({document:doc,lines:lines??[],tenant,template,events:events??[],payments:payments??[],paymentSummary:{paid,balance}});
 }

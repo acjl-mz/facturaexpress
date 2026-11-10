@@ -15,7 +15,18 @@ export default function IspcPage() {
  const [history,setHistory]=useState<Assessment[]>([]);
  const [error,setError]=useState("");
  const [busy,setBusy]=useState(false);
- useEffect(()=>{fetch("/api/ispc/preview?year="+year).then(async r=>{const d=await r.json();if(r.ok)setHistory(d.assessments||[]);}).catch(()=>{});},[year]);
+ useEffect(() => {
+  let active = true;
+  fetch("/api/ispc/preview?year=" + year)
+   .then(async (response) => {
+    const data = await response.json();
+    if (active && response.ok) setHistory(data.assessments || []);
+   })
+   .catch(() => {
+    if (active) setHistory([]);
+   });
+  return () => { active = false; };
+ }, [year]);
  async function calculate(e:FormEvent) {
   e.preventDefault();setBusy(true);setError("");setResult(null);
   try {

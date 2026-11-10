@@ -55,3 +55,36 @@
  .paper-footer{break-inside:avoid;page-break-inside:avoid}
 }
 .document-row .draft-state{white-space:nowrap}
+
+
+/* Bulk 2 — formato térmico 80 mm */
+.print-format-control{display:flex;align-items:center;gap:7px;color:#64748b;font-size:10px;white-space:nowrap}
+.print-format-control select{height:34px;border:1px solid #dce4ee;border-radius:7px;padding:0 8px;background:#fff;color:#344966;font-size:10px}
+.thermal-line-meta{display:block;font-size:8px;color:#77869a;margin-top:3px}
+@media print{
+ body:has(.paper-thermal) @page{size:80mm auto;margin:3mm}
+ .paper-thermal{width:74mm!important;min-width:74mm!important;min-height:0!important;height:auto!important;margin:0!important;box-shadow:none!important;overflow:visible!important}
+ .paper-thermal .paper-inner{min-height:0!important;height:auto!important;padding:2mm!important}
+ .paper-thermal .paper-top{display:block!important}
+ .paper-thermal .issuer-block{max-width:100%!important}
+ .paper-thermal .issuer-block h2{font-size:12px!important}
+ .paper-thermal .issuer-block p,.paper-thermal .document-meta>div{font-size:8px!important}
+ .paper-thermal .document-meta{min-width:0!important;text-align:left!important;margin-top:8px}
+ .paper-thermal .paper-doc-type{font-size:13px!important}
+ .paper-thermal .paper-doc-number{font-size:10px!important}
+ .paper-thermal .paper-rule{margin:8px 0!important}
+ .paper-thermal .paper-customer{margin-bottom:10px!important}
+ .paper-thermal .paper-lines th,.paper-thermal .paper-lines td{font-size:8px!important;padding:5px 2px!important}
+ .paper-thermal .paper-lines th:nth-child(2),.paper-thermal .paper-lines th:nth-child(3),.paper-thermal .paper-lines th:nth-child(4),.paper-thermal .paper-lines th:nth-child(5),.paper-thermal .paper-lines th:nth-child(6),.paper-thermal .paper-lines td:nth-child(2),.paper-thermal .paper-lines td:nth-child(3),.paper-thermal .paper-lines td:nth-child(4),.paper-thermal .paper-lines td:nth-child(5),.paper-thermal .paper-lines td:nth-child(6){display:none!important}
+ .paper-thermal .paper-summary-area{display:block!important;margin-top:10px!important}
+ .paper-thermal .paper-tax-table,.paper-thermal .paper-tax-table *{display:none!important}
+ .paper-thermal .paper-totals>div{font-size:9px!important;padding:5px 0!important}
+ .paper-thermal .paper-totals .grand{font-size:10px!important;padding:8px 5px!important}
+ .paper-thermal .paper-totals .grand b{font-size:12px!important}
+ .paper-thermal .paper-words,.paper-thermal .paper-notes{font-size:8px!important;margin-top:9px!important;padding:6px!important}
+ .paper-thermal .paper-signatures{gap:12px!important;padding-top:25px!important}
+ .paper-thermal .paper-footer{margin-top:12px!important}
+ .paper-thermal .paper-draft-watermark{font-size:35px!important}
+ .paper-thermal .thermal-hide{display:none!important}
+}
+@media(max-width:800px){.print-toolbar{flex-wrap:wrap}.print-toolbar>div{flex-wrap:wrap}.print-format-control{margin:4px 0}}

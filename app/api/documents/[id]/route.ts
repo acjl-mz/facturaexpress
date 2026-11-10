@@ -14,7 +14,7 @@ export async function GET(_req:NextRequest,{params}:{params:Promise<{id:string}>
   s.from("customer_payments").select("id,internal_receipt_code,amount,payment_method,payment_reference,notes,received_at,created_by").eq("document_id",id).eq("tenant_id",u.tenantId).order("received_at",{ascending:false}).limit(100)
  ]);
  if(le||te||templateError||eventsError||paymentsError)return NextResponse.json({error:"Não foi possível carregar todos os dados do documento."},{status:500});
- const paid=(payments??[]).reduce((sum:any,p:any)=>sum+Number(p.amount||0),0);
+ const {data:originalDocument,error:originalError}=doc.corrects_document_id?await s.from("fiscal_documents").select("id,document_number,document_type,issue_date").eq("id",doc.corrects_document_id).eq("tenant_id",u.tenantId).maybeSingle():{data:null,error:null};\n if(originalError)return NextResponse.json({error:"Não foi possível carregar a referência do documento original."},{status:500});\n const paid=(payments??[]).reduce((sum:any,p:any)=>sum+Number(p.amount||0),0);
  const balance=Math.max(0,Number(doc.grand_total||0)-Number(doc.withholding_total||0)-paid);
- return NextResponse.json({document:doc,lines:lines??[],tenant,template,events:events??[],payments:payments??[],paymentSummary:{paid,balance}});
+ return NextResponse.json({document:doc,originalDocument,lines:lines??[],tenant,template,events:events??[],payments:payments??[],paymentSummary:{paid,balance}});
 }

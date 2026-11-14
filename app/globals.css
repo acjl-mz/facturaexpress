@@ -377,3 +377,22 @@ footer{font-size:9px;color:#8998aa}
  .shell-content{padding:18px 13px}
  .shell-content>.simple-page>header{flex-wrap:wrap}
 }
+
+/* Fixed enterprise navigation and regime-aware workspace */
+.shell>.sidebar,.app-layout>.sidebar{position:fixed;inset:0 auto 0 0;height:100dvh;overflow-y:auto;overflow-x:hidden;z-index:40;scrollbar-width:thin}
+.shell>.workspace,.app-layout>.workspace{margin-left:258px;width:calc(100% - 258px);min-width:0}
+.app-layout{min-height:100vh}
+.shell>.workspace>.topbar,.app-layout>.workspace>.topbar{position:sticky;top:0;z-index:30}
+.sidebar nav{min-height:0}
+.sidebar-bottom{margin-top:auto}
+.ispc-primary-note{padding:12px 14px;background:#eef4fb;border:1px solid #d7e3f1;border-radius:5px;color:#345a82;font-size:11px}
+.ispc-activity-config{border:1px solid #dce5ef;border-radius:6px;padding:16px;background:#fafbfd}
+.ispc-activity-config h3{font-size:12px;color:#203b5c;margin:0 0 8px}
+.ispc-activity-config p{font-size:10px;line-height:1.6;color:#71839a;margin:0 0 12px}
+.activity-check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px;margin:10px 0 16px}
+.activity-check-grid label{display:flex;align-items:center;gap:8px;font-size:11px}
+.activity-legal-note{padding:10px;background:#f1f5fa;border-radius:4px}
+@media(max-width:760px){
+ .shell>.sidebar,.app-layout>.sidebar{display:none}
+ .shell>.workspace,.app-layout>.workspace{margin-left:0;width:100%}
+}

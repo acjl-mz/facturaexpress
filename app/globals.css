@@ -425,3 +425,19 @@ footer{font-size:9px;color:#8998aa}
  .shell>.sidebar{transform:translateX(-100%);box-shadow:8px 0 28px #10243e20}
  .shell>.workspace{margin-left:0;width:100%}
 }
+
+/* Header layout hardening: prevent role/status chips from intruding into navigation */
+.shell>.workspace,.app-layout>.workspace{min-width:0;flex:1 1 0}
+.shell>.workspace>.topbar,.app-layout>.workspace>.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;overflow:visible}
+.shell>.workspace>.topbar>.crumb,.app-layout>.workspace>.topbar>.crumb{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 auto;overflow:hidden;white-space:nowrap}
+.shell>.workspace>.topbar>.crumb>span,.app-layout>.workspace>.topbar>.crumb>span{overflow:hidden;text-overflow:ellipsis}
+.shell>.workspace>.topbar>.top-actions,.app-layout>.workspace>.topbar>.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex:0 0 auto;min-width:max-content;margin-left:auto}
+.role-chip{position:static!important;transform:none!important;float:none!important;white-space:nowrap;flex:0 0 auto;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){
+ .shell>.workspace>.topbar,.app-layout>.workspace>.topbar{padding-left:16px;padding-right:16px}
+ .shell>.workspace>.topbar>.top-actions,.app-layout>.workspace>.topbar>.top-actions{gap:8px}
+}
+@media(max-width:760px){
+ .shell>.workspace>.topbar>.top-actions .role-chip,.app-layout>.workspace>.topbar>.top-actions .role-chip{display:none!important}
+ .shell>.workspace,.app-layout>.workspace{width:100%;margin-left:0}
+}

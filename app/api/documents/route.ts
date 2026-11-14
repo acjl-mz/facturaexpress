@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from "next/server";
-import {getSession} from "@/lib/auth";
+import {getSession,writeAudit} from "@/lib/auth";
 import {createClient} from "@/lib/supabase/server";
 
 const allowedStatuses = new Set(["draft","issued","paid","partially_paid","voided"]);

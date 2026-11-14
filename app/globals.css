@@ -441,3 +441,6 @@ footer{font-size:9px;color:#8998aa}
  .shell>.workspace>.topbar>.top-actions .role-chip,.app-layout>.workspace>.topbar>.top-actions .role-chip{display:none!important}
  .shell>.workspace,.app-layout>.workspace{width:100%;margin-left:0}
 }
+
+/* Remove any remaining demo/test-user ribbons from the application shell */
+.demo-banner,.test-user-banner,.test-user-tag,.demo-user-tag,[data-testid*="demo-banner"],[data-testid*="test-user"]{display:none!important;visibility:hidden!important;pointer-events:none!important}

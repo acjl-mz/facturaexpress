@@ -66,10 +66,6 @@ export async function GET(req:NextRequest){
  return NextResponse.json({documents:data??[],total:count??0,page,pageSize});
 }
 
-import {NextRequest,NextResponse} from "next/server";
-import {getSession,writeAudit} from "@/lib/auth";
-import {createClient} from "@/lib/supabase/server";
-const roles=["owner","admin","issuer","accountant"];
 export async function POST(req:NextRequest){
  const user=await getSession();
  if(!user)return NextResponse.json({error:"Não autenticado."},{status:401});

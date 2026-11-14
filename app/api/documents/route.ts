@@ -65,3 +65,51 @@ export async function GET(req:NextRequest){
  }
  return NextResponse.json({documents:data??[],total:count??0,page,pageSize});
 }
+
+import {NextRequest,NextResponse} from "next/server";
+import {getSession,writeAudit} from "@/lib/auth";
+import {createClient} from "@/lib/supabase/server";
+const roles=["owner","admin","issuer","accountant"];
+export async function POST(req:NextRequest){
+ const user=await getSession();
+ if(!user)return NextResponse.json({error:"Não autenticado."},{status:401});
+ if(!roles.includes(user.role))return NextResponse.json({error:"Sem permissão para preparar documentos."},{status:403});
+ try{
+  const b=await req.json();
+  const documentType=String(b.documentType||"");
+  if(!["FT","FR"].includes(documentType))return NextResponse.json({error:"Tipo de documento inválido."},{status:400});
+  if(!Array.isArray(b.lines)||b.lines.length<1||b.lines.length>100)return NextResponse.json({error:"O documento deve conter entre 1 e 100 linhas."},{status:400});
+  const operationId=String(b.operationId||"");
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(operationId))return NextResponse.json({error:"Identificador de operação inválido."},{status:400});
+  const lines=b.lines.map((line:any)=>({
+   item_id:line.itemId||null,
+   description:String(line.description||"").trim(),
+   quantity:Number(line.quantity),
+   unit:String(line.unit||"UN").trim(),
+   unit_price:Number(line.unitPrice),
+   discount_amount:Number(line.discount||0),
+   tax_code:line.taxCode||null,
+   tax_eligibility_reference:line.taxEligibilityReference||null,
+   tax_eligibility_category:line.taxEligibilityCategory||null
+  }));
+  if(lines.some((line:any)=>!line.description||!Number.isFinite(line.quantity)||line.quantity<=0||!Number.isFinite(line.unit_price)||line.unit_price<0||!Number.isFinite(line.discount_amount)||line.discount_amount<0))return NextResponse.json({error:"Existem linhas com descrição, quantidade, preço ou desconto inválidos."},{status:400});
+  const db=await createClient();
+  const {data:id,error}=await db.rpc("create_fiscal_document_draft",{
+   p_customer_id:b.customerId||null,
+   p_document_type:documentType,
+   p_due_date:b.dueDate||null,
+   p_notes:String(b.notes||"").slice(0,2000),
+   p_lines:lines,
+   p_client_operation_id:operationId
+  });
+  if(error){console.error("Draft creation RPC failed",error.message);return NextResponse.json({error:error.message||"Não foi possível criar o rascunho."},{status:400});}
+  if(b.templateId){
+   const {data:template,error:templateError}=await db.from("invoice_templates").select("id").eq("id",b.templateId).eq("tenant_id",user.tenantId).eq("is_active",true).maybeSingle();
+   if(templateError||!template)return NextResponse.json({id,status:"draft",warning:"Rascunho criado, mas o modelo seleccionado não foi encontrado. Será usado o modelo padrão."},{status:201});
+   const {error:updateError}=await db.from("fiscal_documents").update({invoice_template_id:template.id}).eq("id",id).eq("tenant_id",user.tenantId).eq("status","draft");
+   if(updateError)console.error("Draft template assignment failed",updateError.message);
+  }
+  await writeAudit(user,"document.draft_requested","fiscal_document",id,{document_type:documentType,line_count:lines.length});
+  return NextResponse.json({id,status:"draft",message:"Rascunho criado. Os impostos e totais foram calculados pelo motor fiscal no Supabase."},{status:201});
+ }catch(e){console.error("Draft creation failed",e);return NextResponse.json({error:"Não foi possível preparar o documento."},{status:400});}
+}

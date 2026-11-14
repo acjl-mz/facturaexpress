@@ -396,3 +396,20 @@ footer{font-size:9px;color:#8998aa}
  .shell>.sidebar,.app-layout>.sidebar{display:none}
  .shell>.workspace,.app-layout>.workspace{margin-left:0;width:100%}
 }
+
+/* Collapsible fixed enterprise navigation */
+.app-layout{min-height:100vh}
+.app-layout>.sidebar{position:fixed;inset:0 auto 0 0;height:100dvh;overflow-y:auto;z-index:40;transition:transform .2s ease,width .2s ease}
+.app-layout>.workspace{margin-left:258px;width:calc(100% - 258px);min-width:0;transition:margin-left .2s ease,width .2s ease}
+.app-layout>.workspace>.topbar{position:sticky;top:0;z-index:30}
+.app-layout.sidebar-collapsed>.sidebar{transform:translateX(-100%)}
+.app-layout.sidebar-collapsed>.workspace{margin-left:0;width:100%}
+.sidebar-toggle{display:inline-grid;place-items:center;width:32px;height:32px;border:1px solid #dce4ed;border-radius:5px;background:#fff;color:#526780;cursor:pointer;margin-right:12px}
+.sidebar-toggle:hover{background:#f2f6fa}
+.role-chip{display:inline-flex;align-items:center;padding:6px 9px;border:1px solid #dce4ed;border-radius:4px;background:#f7f9fc;color:#405a78;font-size:10px;font-weight:650}
+.top-actions{align-items:center}
+@media(max-width:760px){
+ .app-layout>.sidebar{transform:translateX(-100%);box-shadow:8px 0 28px #10243e20}
+ .app-layout.mobile-menu-open>.sidebar{transform:translateX(0)}
+ .app-layout>.workspace{margin-left:0;width:100%}
+}

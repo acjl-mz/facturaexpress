@@ -350,3 +350,30 @@ footer{font-size:9px;color:#8998aa}
 .auth-foot{font-size:9px}
 @media(max-width:1100px){.sidebar{width:228px}.content{padding:24px}}
 @media(max-width:760px){.sidebar{display:none}.topbar{padding:0 15px}.content{padding:20px 14px}.simple-page{padding:18px 12px}.simple-card{padding:17px}.page-heading h1{font-size:21px}}
+
+
+/* Persistent enterprise navigation */
+.app-layout{min-height:100vh;background:#f1f4f8}
+.sidebar{position:fixed!important;inset:0 auto 0 0;height:100vh;overflow-y:auto;z-index:30;width:252px}
+.workspace{margin-left:252px;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:20}
+.shell-content{min-height:calc(100vh - 60px);padding:26px 30px}
+.shell-content>.simple-page{min-height:calc(100vh - 110px);padding:0;background:transparent}
+.shell-content>.simple-page>header{max-width:1500px;margin:0 auto 18px}
+.shell-content>.simple-page>.simple-card{max-width:1500px;margin:0 auto 20px}
+.shell-content>.simple-page .simple-card{box-shadow:0 1px 2px #152b4508}
+.shell-content>.simple-page>section.simple-card{max-width:1500px}
+.shell-content>.simple-page .report-card{max-width:none}
+.shell-content>.simple-page .users-table{width:100%}
+.nav-link{display:flex;text-decoration:none}
+.company-switch{text-decoration:none;color:inherit;cursor:pointer}
+.user-profile{cursor:pointer}
+.dashboard-layout .workspace{margin-left:252px}
+.dashboard-layout .sidebar nav{padding-bottom:12px}
+@media(max-width:760px){
+ .sidebar{display:flex!important;transform:translateX(-100%);transition:transform .2s}
+ .app-layout .sidebar:focus-within{transform:translateX(0)}
+ .workspace,.dashboard-layout .workspace{margin-left:0}
+ .shell-content{padding:18px 13px}
+ .shell-content>.simple-page>header{flex-wrap:wrap}
+}

@@ -64,7 +64,7 @@ export default function IspcPage() {
       </div>
       <div className="sync-row"><span>Base dentro do limite</span><b>{money(result.taxable_within_limit)}</b></div>
       <div className="sync-row"><span>Base excedente a 20%</span><b>{money(result.taxable_over_limit)}</b></div>
-      <div className="sync-row"><span>Escalão</span><b>{result.rate_code}</b></div>
+      <div className="sync-row"><span>Escalão</span><b>{result.rate_code}</b></div><div className="sync-row"><span>Categoria que determina a taxa</span><b>{result.activity_category==="liberal_profession"?"Profissões liberais":result.activity_category==="general_services"?"Serviços técnicos":"Comércio, agricultura e indústria"}</b></div><div className="sync-row"><span>Actividades consideradas</span><b>{(result.activity_categories||[]).map((v:string)=>v==="liberal_profession"?"Profissões liberais":v==="general_services"?"Serviços técnicos":"Comércio/agricultura/indústria").join(" · ")}</b></div>
       <div className="draft-warning"><Info size={18}/><span>{result.payment_threshold_exemption?"O imposto calculado é inferior a 500 MT: não há pagamento desta prestação, mas a obrigação declarativa mantém-se.":"Esta é uma prévia, sujeita à confirmação do volume de negócios e das regras aplicáveis."}</span></div>
       <small>Fundamento: {result.legal_reference}</small>
      </div>

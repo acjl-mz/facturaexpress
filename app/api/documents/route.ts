@@ -69,7 +69,7 @@ export async function GET(req:NextRequest){
 export async function POST(req:NextRequest){
  const user=await getSession();
  if(!user)return NextResponse.json({error:"Não autenticado."},{status:401});
- if(!roles.includes(user.role))return NextResponse.json({error:"Sem permissão para preparar documentos."},{status:403});
+ if(!["owner","admin","issuer","accountant"].includes(user.role))return NextResponse.json({error:"Sem permissão para preparar documentos."},{status:403});
  try{
   const b=await req.json();
   const documentType=String(b.documentType||"");

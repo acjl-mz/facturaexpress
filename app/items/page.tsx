@@ -7,7 +7,7 @@ type Form={code:string;description:string;unit:string;unitPrice:string;taxCode:s
 const blank=():Form=>({code:"",description:"",unit:"UN",unitPrice:"",taxCode:""});
 export default function ItemsPage(){
  const router=useRouter();const[rows,setRows]=useState<Item[]>([]);const[q,setQ]=useState("");const[show,setShow]=useState(false);const[editing,setEditing]=useState<string|null>(null);const[loading,setLoading]=useState(true);const[message,setMessage]=useState("");const[form,setForm]=useState<Form>(blank);const[busy,setBusy]=useState(false);const[showInactive,setShowInactive]=useState(false);
- const load=useCallback(async()=>{const r=await fetch("/api/items?q="+encodeURIComponent(q));if(r.status===401){router.replace("/login");return;}const d=await r.json();if(!r.ok)throw new Error(d.error);setRows(d.items||[]);},[q,router]);
+ const load=useCallback(async()=>{const r=await fetch("/api/items?includeInactive=1&q="+encodeURIComponent(q));if(r.status===401){router.replace("/login");return;}const d=await r.json();if(!r.ok)throw new Error(d.error);setRows(d.items||[]);},[q,router]);
  useEffect(()=>{load().catch(e=>setMessage(e.message)).finally(()=>setLoading(false));},[load]);
  function edit(x:Item){setEditing(x.id);setShow(false);setForm({code:x.code||"",description:x.description,unit:x.unit||"UN",unitPrice:String(x.unit_price),taxCode:x.tax_code||""});}
  function cancel(){setShow(false);setEditing(null);setForm(blank());}

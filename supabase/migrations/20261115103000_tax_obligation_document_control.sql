@@ -31,16 +31,17 @@ create policy tax_obligation_events_select_tenant on public.tax_obligation_event
    exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()))
  );
 drop policy if exists tax_obligation_events_insert_tenant on public.tax_obligation_events;
+grant select, insert, update on public.tax_obligation_events to authenticated;
 create policy tax_obligation_events_insert_tenant on public.tax_obligation_events
  for insert to authenticated with check (
-   exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()))
+   exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()) and tu.role in ('owner','admin','accountant'))
  );
 drop policy if exists tax_obligation_events_update_tenant on public.tax_obligation_events;
 create policy tax_obligation_events_update_tenant on public.tax_obligation_events
  for update to authenticated using (
-   exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()))
+   exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()) and tu.role in ('owner','admin','accountant'))
  ) with check (
-   exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()))
+   exists (select 1 from public.tenant_users tu where tu.tenant_id=tax_obligation_events.tenant_id and tu.user_id=(select auth.uid()) and tu.role in ('owner','admin','accountant'))
  );
 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)

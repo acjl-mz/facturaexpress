@@ -60,6 +60,12 @@ export default function DocumentsPage(){
     <label><span>&nbsp;</span><button type="button" className="secondary-action" onClick={resetFilters}>Limpar filtros</button></label>
    </div>
    {error&&<div className="form-message">{error}</div>}
+
+   <div className="documents-export-panel">
+    <div><b>Comunicação mensal de facturas à AT</b><small>Exportação preliminar de documentos emitidos para conferência e submissão no Portal e-Declaração. Não substitui o modelo oficial nem comprova certificação do software.</small></div>
+    <label>Mês de referência<input id="at-report-month" type="month" defaultValue={new Date().toISOString().slice(0,7)}/></label>
+    <button type="button" className="secondary-action" onClick={async()=>{const el=document.getElementById("at-report-month") as HTMLInputElement|null;const month=el?.value||"";if(!/^\\d{4}-\\d{2}$/.test(month)){alert("Seleccione o mês de referência.");return;}const response=await fetch("/api/at-invoice-report?month="+encodeURIComponent(month));if(!response.ok){const body=await response.json().catch(()=>({}));alert(body.error||"Não foi possível gerar o ficheiro.");return;}const blob=await response.blob();const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="FacturaExpress-AT-"+month+".csv";a.click();URL.revokeObjectURL(url);}}><FileText size={16}/> Gerar ficheiro CSV</button>
+   </div>
    <div className="documents-results-heading"><b>{total} documento(s)</b><small>{loading?"A actualizar resultados…":`Página ${page} de ${pages}`}</small></div>
    {loading?<p>A carregar documentos…</p>:<div className="users-table">
     {docs.map(document=><button className="document-row" key={document.id} onClick={()=>router.push("/documents/"+document.id)}>

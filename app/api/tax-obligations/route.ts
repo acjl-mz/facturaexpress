@@ -25,7 +25,7 @@ export async function POST(req:NextRequest){
   if(!/^\d{4}-(0[1-9]|1[0-2]|T[1-4])$/.test(String(b.referencePeriod))&&!/^\d{4}$/.test(String(b.referencePeriod)))return NextResponse.json({error:"Período inválido. Use AAAA-MM, AAAA-T1…T4 ou AAAA."},{status:400});
   if(!["date","month","unconfirmed"].includes(precision))return NextResponse.json({error:"Precisão de prazo inválida."},{status:400});
   if(precision==="date"&&(!dueDate||!/^\d{4}-\d{2}-\d{2}$/.test(String(dueDate))||Number.isNaN(Date.parse(dueDate))))return NextResponse.json({error:"Indique uma data confirmada."},{status:400});
-  if(precision==="month"&&(!Number.isInteger(dueMonth)||dueMonth<1||dueMonth>12))return NextResponse.json({error:"Indique o mês confirmado pela AT."},{status:400});
+  if(precision==="month"&&(dueMonth===null||!Number.isInteger(dueMonth)||dueMonth<1||dueMonth>12))return NextResponse.json({error:"Indique o mês confirmado pela AT."},{status:400});
   if(precision==="unconfirmed"&&(dueDate||dueMonth))return NextResponse.json({error:"Não indique uma data ou mês quando o prazo ainda não foi confirmado."},{status:400});
   if(b.officialSourceUrl&&!/^https:\/\//i.test(b.officialSourceUrl))return NextResponse.json({error:"A ligação da fonte oficial deve usar HTTPS."},{status:400});
   const amount=b.estimatedAmount===""||b.estimatedAmount==null?null:Number(b.estimatedAmount);if(amount!==null&&(!Number.isFinite(amount)||amount<0))return NextResponse.json({error:"Valor estimado inválido."},{status:400});

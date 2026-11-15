@@ -2,7 +2,7 @@
 import {useEffect,useMemo,useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
-import {ArrowLeft,Archive,CalendarDays,Download,FileSearch,Filter,RefreshCw,Search,FileText,CheckCircle2,Clock3} from "lucide-react";
+import {ArrowLeft,Archive,Download,FileSearch,Filter,RefreshCw,FileText,CheckCircle2} from "lucide-react";
 
 type Obligation={id:string;title:string;tax_type:string;reference_period:string;status:string;due_date:string|null;due_month:number|null;deadline_precision:string;submitted_at:string|null;submission_reference:string|null;payment_date:string|null;payment_reference:string|null;payment_amount:number|null;estimated_amount:number|null;updated_at:string|null};
 const taxes=["IVA","IRPS","IRPC","ISPC","IS","OTHER"];

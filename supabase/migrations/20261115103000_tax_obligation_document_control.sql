@@ -53,7 +53,7 @@ drop policy if exists tax_evidence_read_tenant on storage.objects;
 create policy tax_evidence_read_tenant on storage.objects for select to authenticated
  using (bucket_id='tax-obligation-evidence' and exists (
    select 1 from public.tenant_users tu
-   where tu.tenant_id::text=(storage.foldername(name))[1] and tu.user_id=(select auth.uid())
+   where tu.tenant_id::text=(storage.foldername(name))[1] and tu.user_id=(select auth.uid()) and tu.role in ('owner','admin','accountant')
  ));
 drop policy if exists tax_evidence_insert_tenant on storage.objects;
 create policy tax_evidence_insert_tenant on storage.objects for insert to authenticated

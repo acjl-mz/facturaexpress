@@ -265,11 +265,61 @@ A comunicação do Governo informa que o Conselho de Ministros aprovou alteraç�
 
 O FacturaExpress só poderá ser descrito como autorizado/certificado/homologado quando existir evidência documental da AT que identifique o software, produtor, versão e âmbito da autorização. Até lá, usar apenas a descrição: **“sistema em desenvolvimento e preparação técnica para avaliação pela AT”**.
 
+
+## 9. Evidência comparativa: lista provisória de softwares e o que pode ser inferido
+
+Foi consultada a publicação da AT intitulada **“Lista Provisória de Softwares de Facturação AT DGI-PMF”**, datada de 30/07/2026. A cópia indexada do documento apresenta campos de controlo como:
+- Nome do programa;
+- Nome do produtor/provedor;
+- Versão;
+- NUIT do produtor;
+- Estado do certificado (activo/inactivo).
+
+A própria nota da lista esclarece que os produtores/utilizadores podem solicitar a divulgação dos seus softwares desde que estes estejam em conformidade com os requisitos estabelecidos no **Despacho Ministerial de 29 de Fevereiro de 2012**, relativo à impressão de facturas e ao processamento por mecanismos de saída por computador.
+
+**O que a lista permite concluir:** a AT acompanha a identidade do produtor, identidade do produto, versão concreta e situação de certificação/estado. A versão é material: a autorização não deve ser presumida extensível a qualquer versão futura.
+
+**O que a lista NÃO permite concluir:** não publica uma checklist técnica por produto, não descreve funcionalidades internas dos concorrentes e não demonstra que todos os nomes listados tenham certificado activo. É uma lista provisória/inquérito e não uma especificação técnica. Não é legítimo copiar funcionalidades de concorrentes ou afirmar que um produto está certificado apenas por constar da lista.
+
+### 9.1 Requisitos observáveis que o FacturaExpress deve preparar
+
+1. **Identidade do produtor:** denominação legal, NUIT, endereço, contactos e responsável técnico.
+2. **Identidade do produto:** FacturaExpress, versão/build exacto, edição e ambiente.
+3. **Gestão de versões:** histórico de releases, hash do artefacto, notas de versão e mecanismo de identificar a versão que emitiu cada documento.
+4. **Evidência de conformidade do Despacho de 29/02/2012:** modelos de impressão, campos obrigatórios, legibilidade, numeração, conservação e reprodução fiel.
+5. **Integridade documental:** documentos emitidos imutáveis, sequência controlada, registo de eventos, correcções/anulações justificadas e arquivo recuperável.
+6. **Exportação e comunicação:** ficheiro mensal conforme estrutura fornecida pela AT, dados de intervenientes, descrição, valores unitários/globais e IVA, submissão no e-Declaração e controlo de comprovativo.
+7. **SAF-T (Moz):** manter como trilho distinto, aguardando o XSD/estrutura e regras oficiais de facturação, aquisição e autofacturação.
+8. **Dossier de certificação:** pedido formal, correspondência com a AT, versão submetida, casos de teste, amostras, resultados, não conformidades e decisão.
+
+### 9.2 Comunicação mensal de dados de facturação — distinção essencial
+
+O Aviso n.º 40/AT/DGI/2025 refere a submissão mensal de dados de facturas e, separadamente, determina que os produtores contactem a AT para obter requisitos do SAF-T (Moz) e procedimentos de certificação. A orientação publicada pela OCAM descreve ficheiro de dados de facturação a submeter no e-Declaração em CSV/XLSX/XML, tamanho máximo de 2 MB e possibilidade de fraccionar períodos quando o volume o exigir. A FAQ da OCAM diz que o modelo foi partilhado com produtores e que o ficheiro deve seguir a estrutura fornecida pela AT. A EY reportou uma excepção para contribuintes registados no ISPC na orientação inicial de 2025.
+
+Por isso, o CSV preliminar agora acrescentado ao FacturaExpress é **apenas ferramenta de reconciliação e conferência**, não é o ficheiro oficial de comunicação. Não inclui ainda o layout exacto fornecido pela AT, compressão, validação de tamanho do pacote comprimido, fraccionamento por períodos, nem prova de submissão. A rota bloqueia o uso automático por perfil ISPC até confirmação das regras específicas actualmente vigentes.
+
+**Acção obrigatória com a AT:** contactar `efacturacao@at.gov.mz` (endereço referido pela FAQ OCAM) e/ou o sector de Máquinas Fiscais através do contacto indicado na lista, solicitando por escrito: modelo exacto do ficheiro mensal actualmente aceite; layout e dicionário de campos; limite de tamanho e compressão; regra aplicável ao ISPC em 2026; prazo actual; procedimentos e evidências de certificação; XSD/estrutura SAF-T (Moz) e ambiente/casos de teste.
+
+### 9.3 Funcionalidade preliminar adicionada nesta fase
+
+Foi acrescentada na listagem de documentos uma opção de exportação CSV por mês, com dados do emitente, adquirente, documentos e linhas. A exportação:
+- Está limitada ao tenant autenticado;
+- Inclui documentos emitidos, pagos, parcialmente pagos e anulados;
+- É identificada internamente como preliminar e não oficial;
+- Rejeita o regime ISPC enquanto a aplicabilidade não for confirmada;
+- Não submete dados à AT nem gera protocolo.
+
+Não apresentar esta função como “comunicação AT concluída”. A substituição pelo exportador oficial só pode ocorrer após obtenção do layout autorizado e testes com ficheiros de referência da AT.
+
+
 ## 8. Fontes consultadas
 - AT — Legislação fiscal: https://www.at.gov.mz/legislacao/fiscal
 - AT — Comunicados oficiais, incluindo Comunicado n.º 9/2026 e lista provisória de software: https://www.at.gov.mz/informacoes/comunicado-de-imprensa
 - Imprensa Nacional — BR n.º 248, Suplemento n.º 1, 29/12/2025: https://inm.gov.mz/pt-br/content/sum%C3%A1rio-suplemento-n%C2%BA-1-de-291225-pag-2180-1-20-br-n%C2%BA-248-boletim-da-rep%C3%BAblica-i-serie-p%C3%A1g-1
 - Portal do Contribuinte/e-Declaração: https://edeclaracao.at.gov.mz/
+- OCAM — Aviso n.º 40/AT/DGI/2025 e comunicação electrónica de dados de facturação: https://ocam.org.mz/2025/06/ocam-e-at-debatem-implementacao-do-aviso-n-o-40-at-dgi-2025-sobre-comunicacao-eletronica-de-dados-de-faturacao/
+- Cegid — Obrigatoriedade de comunicação de facturas e SAF-T (Moz): https://help.ila.cegid.com/primavera/docs/1744041274
+- EY — Procedimento de comunicação das facturas à AT: https://www.ey.com/pt_mz/technical/tax-alerts/procedimento-de-comunicacao-das-facturas-emitidas-a-autoridade-tributaria-de-mocambique
 - OCAM — FAQ Facturação electrónica: https://ocam.org.mz/2025/06/perguntas-frequentes-sobre-a-facturacao-electronica/
 - PwC — Reforma fiscal moçambicana: https://www.pwc.com/mz/pt/servicos/tax/reforma-fiscal-mocambicana.html
 - PwC — IVA: https://www.pwc.pt/pt/pwcinforfisco/flash/mocambique/mocambique-iva-alteracao-civa.html

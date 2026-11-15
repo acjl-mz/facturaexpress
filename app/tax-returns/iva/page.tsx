@@ -14,6 +14,7 @@ const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","A
 
 export default function IvaReturnsPage() {
  const router = useRouter();
+ useEffect(() => { const requestedYear = new URLSearchParams(window.location.search).get("year"); if (requestedYear && /^\\d{4}$/.test(requestedYear)) setYear(requestedYear); }, []);
  const now = new Date();
  const [year, setYear] = useState(String(now.getFullYear()));
  const [month, setMonth] = useState(String(now.getMonth() + 1));

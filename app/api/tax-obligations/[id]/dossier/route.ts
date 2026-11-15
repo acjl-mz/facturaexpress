@@ -46,7 +46,7 @@ export async function POST(req:NextRequest,{params}:{params:Promise<{id:string}>
    await writeAudit(u,"tax_obligation.evidence_uploaded","tax_obligation",id);
    return NextResponse.json({path,message:"Comprovativo guardado."},{status:201});
   }
-  const b=await req.json();const now=new Date().toISOString();let patch:any={updated_at:now},event:any={tenant_id:u.tenantId,obligation_id:id,actor_user_id:u.id,event_date:now,metadata:{}};
+  const b=await req.json();const now=new Date().toISOString();const patch:any={updated_at:now},event:any={tenant_id:u.tenantId,obligation_id:id,actor_user_id:u.id,event_date:now,metadata:{}};
   if(b.action==="prepare"){
    let sourceExists=false;
    if(obligation.tax_type==="IVA"&&/^\\d{4}-\\d{2}$/.test(obligation.reference_period)){

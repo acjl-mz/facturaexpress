@@ -21,7 +21,7 @@ export default function AppShell({children}:{children:React.ReactNode}){
  {title:"TRABALHO",items:common},
  {title:"FISCALIDADE",items:fiscal},
  {title:"SISTEMA",items:management},
- {title:"ADMINISTRAÇÃO",items:[{label:"Configuração da empresa",href:"/company",icon:Settings},...(user?.role==="owner"||user?.role==="admin"?[{label:"Utilizadores",href:"/users",icon:Users}]:[]),{label:"Ajuda",href:"/help",icon:CircleHelp}]}
+ {title:"ADMINISTRAÇÃO",items:[{label:"Configuração da empresa",href:"/company",icon:Settings},...(user?.role==="owner"||user?.role==="admin"?[{label:"Utilizadores",href:"/users",icon:Users},{label:"Identificação do software",href:"/system-info",icon:ShieldCheck}]:[]),{label:"Ajuda",href:"/help",icon:CircleHelp}]}
  ],[user?.role]);
  if(pathname==="/login")return <>{children}</>;
  if(["/treasury","/reconciliation","/suppliers","/reports"].some(p=>pathname===p||pathname.startsWith(p+"/"))){router.replace("/");return <div className="simple-loading">A redireccionar…</div>;}

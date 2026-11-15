@@ -28,7 +28,6 @@ export async function GET(req:NextRequest){
   if(!lines.length){rows.push([d.document_type,d.document_number,d.status,d.issue_date,company?.nuit,customer?.name,customer?.nuit,customer?.address,d.currency,d.exchange_rate,money(d.subtotal),money(d.discount_total),money(d.tax_total),money(d.withholding_total),money(d.grand_total)]);continue;}
   for(const l of lines)rows.push([d.document_type,d.document_number,d.status,d.issue_date,company?.nuit,customer?.name,customer?.nuit,customer?.address,d.currency,d.exchange_rate,money(d.subtotal),money(d.discount_total),money(d.tax_total),money(d.withholding_total),money(d.grand_total),l.description,l.quantity,l.unit,l.unit_price,l.discount_amount,l.tax_code,l.tax_rate,l.taxable_amount,l.tax_amount,l.line_total]);
  }
- const body="\uFEFF"+rows.map(row=>row.map(csv).join(";")).join("\r
-");
+ const body="\uFEFF"+rows.map(row=>row.map(csv).join(";")).join(String.fromCharCode(13,10));
  return new NextResponse(body,{status:200,headers:{"Content-Type":"text/csv; charset=utf-8","Content-Disposition":'attachment; filename="FacturaExpress-AT-'+month+'.csv"',"Cache-Control":"no-store"}});
 }

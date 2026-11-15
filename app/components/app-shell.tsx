@@ -2,12 +2,12 @@
 import {useEffect,useMemo,useState} from "react";
 import {usePathname,useRouter} from "next/navigation";
 import Link from "next/link";
-import {Bell, BookOpen, Calculator, ChevronDown, CircleHelp, CreditCard, FileText, LayoutDashboard, Package, Palette, Settings, ShieldCheck, Users, Wifi, WifiOff} from "lucide-react";
+import {Archive, Bell, BookOpen, Calculator, ChevronDown, CircleHelp, CreditCard, FileText, LayoutDashboard, Package, Palette, Settings, ShieldCheck, Users, Wifi, WifiOff} from "lucide-react";
 
 type User={id:string;email:string;fullName:string;role:string;tenantId:string};
 type Profile={regime_code?:string;confirmation_status?:string;ispc_activity_categories?:string[]};
 const common=[{label:"Visão geral",href:"/",icon:LayoutDashboard},{label:"Documentos",href:"/documents",icon:FileText},{label:"Séries documentais",href:"/series",icon:FileText},{label:"Clientes",href:"/customers",icon:Users},{label:"Produtos e serviços",href:"/items",icon:Package},{label:"Pagamentos",href:"/payments",icon:CreditCard}];
-const fiscal=[{label:"Guias e declarações fiscais",href:"/tax-obligations",icon:Calculator},{label:"Mapa fiscal anual",href:"/tax-reports",icon:FileText},{label:"Retenções na fonte",href:"/tax-withholdings",icon:ShieldCheck},{label:"Perfil fiscal",href:"/tax",icon:Settings}];
+const fiscal=[{label:"Guias e declarações fiscais",href:"/tax-obligations",icon:Calculator},{label:"Arquivo fiscal",href:"/tax-archive",icon:Archive},{label:"Mapa fiscal anual",href:"/tax-reports",icon:FileText},{label:"Retenções na fonte",href:"/tax-withholdings",icon:ShieldCheck},{label:"Perfil fiscal",href:"/tax",icon:Settings}];
 const management=[{label:"Modelos de impressão",href:"/templates",icon:Palette}];
 export default function AppShell({children}:{children:React.ReactNode}){
  const pathname=usePathname();const router=useRouter();

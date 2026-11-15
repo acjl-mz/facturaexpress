@@ -26,7 +26,7 @@ export async function POST(req:NextRequest,{params}:{params:Promise<{id:string}>
  const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});
  if(!canWrite(u.role))return NextResponse.json({error:"Sem permissões para actualizar o dossier fiscal."},{status:403});
  const {id}=await params;const s=await createClient();
- const {data:obligation,error:oe}=await s.from("tax_obligations").select("id,tax_type,reference_period,status").eq("id",id).eq("tenant_id",u.tenantId).single();
+ const {data:obligation,error:oe}=await s.from("tax_obligations").select("id,tax_type,reference_period,status,prepared_at,reviewed_at,submission_reference").eq("id",id).eq("tenant_id",u.tenantId).single();
  if(oe||!obligation)return NextResponse.json({error:"Obrigação não encontrada."},{status:404});
  try{
   const isMultipart=req.headers.get("content-type")?.includes("multipart/form-data");
@@ -48,16 +48,28 @@ export async function POST(req:NextRequest,{params}:{params:Promise<{id:string}>
   }
   const b=await req.json();const now=new Date().toISOString();let patch:any={updated_at:now},event:any={tenant_id:u.tenantId,obligation_id:id,actor_user_id:u.id,event_date:now,metadata:{}};
   if(b.action==="prepare"){
+   let sourceExists=false;
+   if(obligation.tax_type==="IVA"&&/^\\d{4}-\\d{2}$/.test(obligation.reference_period)){
+    const [y,m]=obligation.reference_period.split("-").map(Number);
+    const {data}=await s.from("tax_return_periods").select("id").eq("tenant_id",u.tenantId).eq("tax_type","IVA").eq("tax_year",y).eq("tax_period",m).maybeSingle();sourceExists=!!data;
+   }else if(obligation.tax_type==="ISPC"&&/^\\d{4}-T[1-4]$/.test(obligation.reference_period)){
+    const y=Number(obligation.reference_period.slice(0,4)),q=Number(obligation.reference_period.slice(-1));
+    const {data}=await s.from("ispc_quarterly_assessments").select("id").eq("tenant_id",u.tenantId).eq("tax_year",y).eq("quarter",q).maybeSingle();sourceExists=!!data;
+   }
+   if(!sourceExists)return NextResponse.json({error:"Prepare primeiro o apuramento no módulo fiscal correspondente a este período."},{status:409});
    patch.status="in_progress";patch.prepared_at=now;event.event_type="prepared";event.notes=String(b.notes||"Apuramento preparado.");
   }else if(b.action==="review"){
+   if(!obligation.prepared_at)return NextResponse.json({error:"Registe primeiro o apuramento preparado."},{status:409});
    if(!String(b.notes||"").trim())return NextResponse.json({error:"Registe uma nota de revisão ou validação."},{status:400});
    patch.reviewed_at=now;patch.reviewed_by=u.id;event.event_type="reviewed";event.notes=String(b.notes).trim();
   }else if(b.action==="submit"){
+   if(!obligation.reviewed_at)return NextResponse.json({error:"A declaração deve ser revista e validada antes de registar a submissão."},{status:409});
    const ref=String(b.reference||"").trim(),date=String(b.date||"");
    if(!ref||!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))return NextResponse.json({error:"Indique a referência e a data efectiva de submissão."},{status:400});
    patch.status="filed";patch.filed_at=new Date(date+"T12:00:00").toISOString();patch.submitted_at=patch.filed_at;patch.submission_reference=ref;
    event.event_type="submission_recorded";event.reference=ref;event.notes=String(b.notes||"Submissão registada pelo utilizador.");
   }else if(b.action==="payment"){
+   if(obligation.status!=="filed"||!obligation.submission_reference)return NextResponse.json({error:"Registe a submissão da declaração antes do pagamento."},{status:409});
    const ref=String(b.reference||"").trim(),date=String(b.date||""),amount=Number(b.amount);
    if(!ref||!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||!Number.isFinite(amount)||amount<=0)return NextResponse.json({error:"Indique referência oficial, data e valor pago."},{status:400});
    const {data:current}=await s.from("tax_obligations").select("payment_proof_path").eq("id",id).eq("tenant_id",u.tenantId).single();

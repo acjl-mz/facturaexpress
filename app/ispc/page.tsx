@@ -8,7 +8,7 @@ const money = (v:number) => new Intl.NumberFormat("pt-MZ",{style:"currency",curr
 export default function IspcPage() {
  const router=useRouter();
  const [year,setYear]=useState(String(new Date().getFullYear()));
- useEffect(()=>{const requestedYear=new URLSearchParams(window.location.search).get("year");if(requestedYear&&/^\d{4}$/.test(requestedYear))setYear(requestedYear);},[]);
+ useEffect(()=>{const params=new URLSearchParams(window.location.search);const requestedYear=params.get("year");const requestedQuarter=params.get("quarter");if(requestedYear&&/^\d{4}$/.test(requestedYear))setYear(requestedYear);if(requestedQuarter&&/^[1-4]$/.test(requestedQuarter))setQuarter(requestedQuarter);},[]);
  const [quarter,setQuarter]=useState("1");
  const [before,setBefore]=useState("0");
  const [turnover,setTurnover]=useState("");

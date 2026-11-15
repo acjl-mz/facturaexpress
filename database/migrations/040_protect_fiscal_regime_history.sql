@@ -11,7 +11,7 @@ BEGIN
  IF auth.uid() IS NOT NULL THEN
   SELECT role INTO v_role FROM public.tenant_users
   WHERE tenant_id=NEW.tenant_id AND user_id=auth.uid();
-  IF v_role NOT IN ('owner','admin') THEN
+  IF coalesce(v_role,'') NOT IN ('owner','admin') THEN
    RAISE EXCEPTION 'Apenas o proprietário ou administrador pode alterar o perfil fiscal.';
   END IF;
  END IF;

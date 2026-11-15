@@ -7,7 +7,7 @@ export async function GET(req:NextRequest){
  const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});
  const year=Number(req.nextUrl.searchParams.get("year")||new Date().getFullYear());
  if(!validYear(year))return NextResponse.json({error:"Ano inválido."},{status:400});
- const s=await createClient();const {data,error}=await s.from("tax_return_periods").select("*").eq("tenant_id",u.tenantId).eq("tax_type","IVA").eq("tax_year",year).order("tax_period");
+ const s=await createClient();const {data:profile,error:profileError}=await s.from("tenant_tax_profiles").select("regime_code,confirmation_status").eq("tenant_id",u.tenantId).maybeSingle();if(profileError)return NextResponse.json({error:"Não foi possível validar o perfil fiscal."},{status:500});if(!profile||profile.regime_code!=="IVA_REGULAR"||profile.confirmation_status!=="confirmed")return NextResponse.json({error:"As declarações IVA exigem um perfil IVA normal confirmado."},{status:403});const {data,error}=await s.from("tax_return_periods").select("*").eq("tenant_id",u.tenantId).eq("tax_type","IVA").eq("tax_year",year).order("tax_period");
  if(error)return NextResponse.json({error:"Não foi possível consultar as declarações."},{status:500});
  return NextResponse.json({returns:data||[]});
 }

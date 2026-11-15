@@ -90,6 +90,11 @@ export async function POST(req:NextRequest){
   }));
   if(lines.some((line:any)=>!line.description||!Number.isFinite(line.quantity)||line.quantity<=0||!Number.isFinite(line.unit_price)||line.unit_price<0||!Number.isFinite(line.discount_amount)||line.discount_amount<0))return NextResponse.json({error:"Existem linhas com descrição, quantidade, preço ou desconto inválidos."},{status:400});
   const db=await createClient();
+  const {data:taxProfile,error:taxProfileError}=await db.from("tenant_tax_profiles").select("regime_code,confirmation_status,ispc_opt_in,ispc_primary_activity_code,ispc_annual_reference_turnover,ispc_reference_confirmed,at_activity_confirmation_reference").eq("tenant_id",user.tenantId).maybeSingle();
+  if(taxProfileError)return NextResponse.json({error:"Não foi possível validar o perfil fiscal."},{status:500});
+  if(!taxProfile||taxProfile.confirmation_status!=="confirmed")return NextResponse.json({error:"Configure e confirme o perfil fiscal da empresa antes de preparar documentos."},{status:409});
+  if(!["IVA_REGULAR","ISPC"].includes(taxProfile.regime_code))return NextResponse.json({error:"O regime fiscal desta empresa ainda não está habilitado para facturação no FacturaExpress."},{status:409});
+  if(taxProfile.regime_code==="ISPC"&&(!taxProfile.ispc_opt_in||!taxProfile.ispc_primary_activity_code||!taxProfile.ispc_reference_confirmed||!taxProfile.ispc_annual_reference_turnover||!taxProfile.at_activity_confirmation_reference))return NextResponse.json({error:"O enquadramento ISPC está incompleto. Confirme a actividade principal e os dados de referência antes de facturar."},{status:409});
   const {data:id,error}=await db.rpc("create_fiscal_document_draft",{
    p_customer_id:b.customerId||null,
    p_document_type:documentType,

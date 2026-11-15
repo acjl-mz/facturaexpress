@@ -2,12 +2,11 @@
 import {useEffect,useMemo,useState} from "react";
 import {usePathname,useRouter} from "next/navigation";
 import Link from "next/link";
-import {Activity, Bell, BookOpen, Calculator, CalendarDays, ChevronDown, CircleHelp, ClipboardList, CreditCard, FileText, LayoutDashboard, Landmark, Package, Palette, Settings, ShieldCheck, Users, Wallet, Wifi, WifiOff} from "lucide-react";
+import {Bell, BookOpen, Calculator, ChevronDown, CircleHelp, CreditCard, FileText, LayoutDashboard, Package, Palette, Settings, ShieldCheck, Users, Wifi, WifiOff} from "lucide-react";
 
 type User={id:string;email:string;fullName:string;role:string;tenantId:string};
 type Profile={regime_code?:string;confirmation_status?:string;ispc_activity_categories?:string[]};
 const common=[{label:"Visão geral",href:"/",icon:LayoutDashboard},{label:"Documentos",href:"/documents",icon:FileText},{label:"Séries documentais",href:"/series",icon:FileText},{label:"Clientes",href:"/customers",icon:Users},{label:"Produtos e serviços",href:"/items",icon:Package},{label:"Pagamentos",href:"/payments",icon:CreditCard}];
-const decision=[{label:"Relatórios financeiros",href:"/reports",icon:ClipboardList},{label:"Tesouraria",href:"/treasury",icon:Wallet},{label:"Reconciliação bancária",href:"/reconciliation",icon:Activity},{label:"Fornecedores e aquisições",href:"/suppliers",icon:Landmark}];
 const fiscal=[{label:"Guias e declarações fiscais",href:"/tax-obligations",icon:Calculator},{label:"Mapa fiscal anual",href:"/tax-reports",icon:FileText},{label:"Retenções na fonte",href:"/tax-withholdings",icon:ShieldCheck},{label:"Perfil fiscal",href:"/tax",icon:Settings}];
 const management=[{label:"Modelos de impressão",href:"/templates",icon:Palette}];
 export default function AppShell({children}:{children:React.ReactNode}){
@@ -20,7 +19,6 @@ export default function AppShell({children}:{children:React.ReactNode}){
  const fiscalProfileConfirmed=profile?.confirmation_status==="confirmed";const isVat=fiscalProfileConfirmed&&["IVA_REGULAR","IVA_EXEMPT"].includes(regime);const isIspc=fiscalProfileConfirmed&&regime==="ISPC";
  const groups=useMemo(()=>[
  {title:"TRABALHO",items:common},
- {title:"GESTÃO E DECISÃO",items:decision},
  {title:"FISCALIDADE",items:fiscal},
  {title:"SISTEMA",items:management},
  {title:"ADMINISTRAÇÃO",items:[{label:"Configuração da empresa",href:"/company",icon:Settings},...(user?.role==="owner"||user?.role==="admin"?[{label:"Utilizadores",href:"/users",icon:Users}]:[]),{label:"Ajuda",href:"/help",icon:CircleHelp}]}

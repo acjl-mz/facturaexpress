@@ -309,6 +309,10 @@ Foi acrescentada na listagem de documentos uma opção de exportação CSV por m
 - Rejeita o regime ISPC enquanto a aplicabilidade não for confirmada;
 - Não submete dados à AT nem gera protocolo.
 
+### 9.4 Ficha técnica do software
+
+Foi criada a página administrativa `/system-info`, com rota de leitura autenticada, para apresentar nome do produto, versão declarada no `package.json`, hash de commit/ambiente Vercel quando disponíveis, arquitectura e estado da autorização consultada. A página está ligada à navegação de administração. Os dados legais do produtor permanecem explicitamente por preencher, porque não devem ser inferidos dos dados da empresa cliente. Esta ficha é interna e não substitui o dossier formal nem o formulário da AT.
+
 Não apresentar esta função como “comunicação AT concluída”. A substituição pelo exportador oficial só pode ocorrer após obtenção do layout autorizado e testes com ficheiros de referência da AT.
 
 

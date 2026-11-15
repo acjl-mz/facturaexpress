@@ -19,8 +19,8 @@ export default function Home(){
  const nav=[{title:"FACTURAÇÃO",items:[["Visão geral",LayoutDashboard],["Documentos",FileText],["Séries documentais",FileText],["Clientes",Users],["Produtos e serviços",Package],["Pagamentos",CreditCard],["Relatórios de facturação",ClipboardList],["Modelos de impressão",Palette]]},{title:"FISCALIDADE",items:[["ISPC trimestral",Calculator],["Declarações IVA",FileText],["Modelo B — ISPC",FileText]]},{title:"SISTEMA",items:[["Configurações",Settings],["Utilizadores",Users],["Ajuda",CircleHelp]]}] as const;
  const regime=taxProfile?.regime_code|| (company?.tax_regime==="IVA"?"IVA_REGULAR":company?.tax_regime==="ISPC"?"ISPC":"");
  const visibleNav=nav.map(group=>({...group,items:group.items.filter(([name])=>{
-  if(name==="ISPC trimestral"||name==="Modelo B — ISPC")return regime==="ISPC";
-  if(name==="Declarações IVA"||name==="Retenções IRPS / IRPC")return regime==="IVA_REGULAR"||regime==="IVA_EXEMPT";
+  if(name==="ISPC trimestral"||name==="Modelo B — ISPC")return regime==="ISPC"&&taxProfile?.confirmation_status==="confirmed";
+  if(name==="Declarações IVA"||name==="Retenções IRPS / IRPC")return (regime==="IVA_REGULAR"||regime==="IVA_EXEMPT")&&taxProfile?.confirmation_status==="confirmed";
   if(name==="Motor fiscal")return !["ISPC","IVA_REGULAR","IVA_EXEMPT"].includes(regime);
   return true;
  })})).filter(group=>group.items.length>0);

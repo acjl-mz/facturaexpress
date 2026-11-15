@@ -2,9 +2,6 @@ import {NextRequest,NextResponse} from "next/server";
 import {getSession,writeAudit} from "@/lib/auth";
 import {createClient} from "@/lib/supabase/server";
 export async function GET(req:NextRequest){const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});const s=await createClient();const {data,error}=await s.from("tax_obligations").select("*").eq("tenant_id",u.tenantId).order("due_date").limit(500);if(error)return NextResponse.json({error:error.message},{status:500});return NextResponse.json({obligations:data||[]});}
-import {NextRequest,NextResponse} from "next/server";
-import {getSession,writeAudit} from "@/lib/auth";
-import {createClient} from "@/lib/supabase/server";
 const allowed=["IVA","IRPS","IRPC","ISPC","IS","OTHER"];
 export async function POST(req:NextRequest){
  const u=await getSession();if(!u)return NextResponse.json({error:"Não autenticado."},{status:401});

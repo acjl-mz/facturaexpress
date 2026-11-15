@@ -20,7 +20,7 @@ export default function Home(){
  const regime=taxProfile?.regime_code|| (company?.tax_regime==="IVA"?"IVA_REGULAR":company?.tax_regime==="ISPC"?"ISPC":"");
  const visibleNav=nav.map(group=>({...group,items:group.items.filter(([name])=>{
   if(name==="ISPC trimestral"||name==="Modelo B — ISPC")return regime==="ISPC"&&taxProfile?.confirmation_status==="confirmed";
-  if(name==="Declarações IVA"||name==="Retenções IRPS / IRPC")return (regime==="IVA_REGULAR"||regime==="IVA_EXEMPT")&&taxProfile?.confirmation_status==="confirmed";
+  if(name==="Declarações IVA")return (regime==="IVA_REGULAR"||regime==="IVA_EXEMPT")&&taxProfile?.confirmation_status==="confirmed";
   if(name==="Motor fiscal")return !["ISPC","IVA_REGULAR","IVA_EXEMPT"].includes(regime);
   return true;
  })})).filter(group=>group.items.length>0);

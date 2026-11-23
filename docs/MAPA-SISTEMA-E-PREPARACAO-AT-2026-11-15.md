@@ -427,3 +427,10 @@ O bloco AT só pode ser marcado como concluído quando:
 - o sistema continuar a bloquear emissão quando a autorização faltar, expirar, for suspensa ou não corresponder à versão.
 
 **Estado em 23/11/2026:** preparação técnica em curso; não autorizado/certificado. O bloco AT permanece aberto e não pode ser apresentado como finalizado.
+
+
+### 10.7 Controlo de versão aplicado à chamada de emissão
+
+A rota `POST /api/documents/[id]/issue` deixou de enviar a versão literal `0.1.0` e passou a importar `package.json`. Assim, a versão enviada à RPC acompanha a versão declarada no pacote, reduzindo o risco de o backend validar uma versão diferente da que a ficha técnica apresenta. A igualdade com a versão formalmente autorizada continua a ser obrigatória no Supabase.
+
+**Validação pendente:** confirmar o build de produção deste commit e testar que uma versão diferente da autorizada é sempre rejeitada. Não foi alterada a autorização nem o bloqueio.

@@ -128,3 +128,27 @@ Os valores de maturidade são estimativas conservadoras de baseline, baseadas no
 5. Só depois avançar para os restantes gaps fiscais e de compatibilidade AT.
 
 **Última revisão deste painel:** 23/11/2026 — baseline inicial de 47%.
+
+
+## 7. Diário de execução — primeiro bulk de estabilização
+
+**Data:** 23/11/2026  
+**Commit de código mais recente:** `614fac9e73a3274fff697e1a281116c4046c1df3`  
+**Estado da avaliação:** alterações gravadas na `main`; deployment de produção ainda em fila na última verificação.
+
+### Alterações realizadas
+- `app/ispc/model-b/page.tsx`: estabilizada a função de carregamento com `useCallback` e dependência explícita do efeito.
+- `app/customers/[id]/page.tsx`: estabilizado o carregamento do extracto por período/cliente e alinhadas as dependências do efeito.
+- `app/documents/[id]/edit/page.tsx`: o carregamento de dados auxiliares volta a reagir à mudança do identificador do rascunho.
+- `app/components/app-shell.tsx`: removidas variáveis de perfil fiscal não utilizadas.
+- `app/api/ispc/preview/route.ts`: removido parâmetro de captura de erro não utilizado.
+
+### Resultado e limites
+- As alterações foram confirmadas na branch `main` em commits separados; o último SHA é o indicado acima.
+- Ainda não existe evidência de build concluído para o conjunto final destas alterações. Não marcar os avisos como resolvidos até inspeccionar os logs do deployment final.
+- A advertência de imagem `<img>` permanece por tratar; não foi alterada sem contexto suficiente.
+- A ocorrência anterior de `ReferenceError: location is not defined` durante prerenderização ainda não foi localizada. A pesquisa textual no código não encontrou acesso directo que explique o stack minificado; continua pendente análise da dependência/bundle.
+- Não houve testes autenticados de navegação nem testes de integração com dados reais. A pontuação global permanece **47%**; este bulk não gera aumento de percentagem sem validação.
+
+### Próximo passo
+Aguardar o deployment associado ao commit final, rever todos os logs de lint/SSR e, se o build estiver limpo, executar testes funcionais autenticados do fluxo de rascunho, extracto de cliente e mapa ISPC.

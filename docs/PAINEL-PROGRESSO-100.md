@@ -152,3 +152,42 @@ Os valores de maturidade são estimativas conservadoras de baseline, baseadas no
 
 ### Próximo passo
 Aguardar o deployment associado ao commit final, rever todos os logs de lint/SSR e, se o build estiver limpo, executar testes funcionais autenticados do fluxo de rascunho, extracto de cliente e mapa ISPC.
+
+
+## 8. Diário de execução — segundo bulk de estabilização
+
+**Data:** 23/11/2026  
+**Deployment anterior:** `dpl_FVv7d7owvqer9hCZStihYitUCMXo`  
+**Commit avaliado:** `5848c606c3a74bd04e91014bfb57821bfb7a0871`  
+**Estado:** Production / READY; build de 43 segundos; 59/59 páginas estáticas geradas.
+
+### Resultado da inspecção dos logs
+- Não foram encontradas ocorrências de `ReferenceError: location is not defined` nos eventos do deployment `5848c606`.
+- Também não foram encontrados avisos `react-hooks/exhaustive-deps` nesse build.
+- Permaneciam avisos de variáveis/imports não utilizados e a recomendação Next.js para imagem `<img>`.
+- O erro histórico de `location` não está demonstrado como resolvido de forma definitiva: não foi identificado o componente/biblioteca de origem e a ausência no log mais recente não prova que não volte a ocorrer noutro caminho de prerenderização.
+
+### Alterações efectuadas neste bulk
+- `app/components/app-shell.tsx`: removido estado/perfil fiscal que não era utilizado no shell; mantida a consulta fiscal necessária às regras de encaminhamento.
+- `app/ispc/model-b/page.tsx`: removido import não utilizado.
+- `app/page.tsx`: removidos import e estado/cálculo fiscal sem utilização, bem como uma chamada redundante a `/api/tax-profile` no dashboard.
+- `app/payments/page.tsx`: removidos imports de ícones não utilizados.
+- `app/reconciliation/page.tsx`: removido import não utilizado.
+- `app/documents/[id]/page.tsx`: documentada a excepção local para `<img>`, pois o logótipo é configurável por organização e o URL é fornecido em runtime; não foi substituído por `next/image` sem uma estratégia de configuração/remote patterns compatível com URLs multi-tenant.
+
+### Commits na branch main
+- `69e3bfb` — app shell
+- `92d19dd` — página Modelo B
+- `ad9c125` — dashboard
+- `add4d10` — pagamentos
+- `42440ff` — reconciliação
+- `18b3685` — detalhe de documento
+
+### Critérios ainda não fechados
+- Aguardam build e revisão dos logs do deployment que inclui todos estes commits.
+- A origem do antigo erro SSR `location` continua sob observação.
+- Ainda não foi executado um conjunto autenticado de testes de ponta a ponta.
+- A maturidade global mantém-se em **47%** até confirmação do build e testes de aceitação; as limpezas de lint isoladas não justificam aumento da pontuação.
+
+### Próximo passo
+Confirmar o deployment final associado ao último commit, rever warnings/errors, e depois avançar para testes autenticados do fluxo de rascunho → emissão autorizada → PDF/impressão, sem emitir documentos fiscais reais de teste.

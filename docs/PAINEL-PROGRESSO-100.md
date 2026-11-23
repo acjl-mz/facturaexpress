@@ -191,3 +191,33 @@ Aguardar o deployment associado ao commit final, rever todos os logs de lint/SSR
 
 ### Próximo passo
 Confirmar o deployment final associado ao último commit, rever warnings/errors, e depois avançar para testes autenticados do fluxo de rascunho → emissão autorizada → PDF/impressão, sem emitir documentos fiscais reais de teste.
+
+
+## 9. Diário de execução — primeiro bulk funcional do ciclo documental
+
+**Data:** 23/11/2026  
+**Commit:** `4b2c7a0c8b5d63992f7bc0e64967bf6b26a3b8c2`  
+**Deployment:** `dpl_C8tDXBhLUWpqYidZYF2SinUdPpcm` — Production / READY.
+
+### Alteração funcional
+- Implementado `PATCH /api/documents`, que faltava apesar de o formulário de edição de rascunhos já o invocar.
+- A API autentica a sessão e valida papel, UUID, estado do documento, datas, observações, quantidade de linhas, descrições, unidades, quantidades, preços e descontos.
+- A actualização usa a função existente `update_fiscal_document_draft` no Supabase, que bloqueia a linha do documento, confirma que continua em rascunho, valida o cliente e o perfil fiscal, recalcula impostos e totais no servidor e regista eventos/auditoria.
+- O template seleccionado é validado no tenant antes da associação ao documento.
+- Não foi criada uma lógica fiscal duplicada na API.
+
+### Verificação
+- O deployment de produção correspondente ao commit ficou em estado `READY`.
+- O log confirma compilação bem-sucedida, verificação de lint/tipos e geração de 59/59 páginas estáticas.
+- Permanecem avisos de lint em páginas fora deste fluxo.
+- O mesmo deployment registou novamente `ReferenceError: location is not defined` em prerenderização (chunk minificado `5591.js`). Portanto, esta falha continua aberta e deve ser localizada; não deve ser considerada resolvida.
+- Não foi executado teste funcional autenticado de edição com dados de uma empresa. O build confirma compilação, não o comportamento de runtime da operação.
+- A pontuação global permanece **47%**. A implementação fecha uma lacuna de API, mas ainda falta validar o fluxo ponta a ponta e os cenários de erro/concorrência.
+
+### Próximos critérios funcionais
+1. Testar criar → editar → reabrir rascunho e confirmar persistência de cliente, linhas, impostos, vencimento e template.
+2. Testar que documentos emitidos/anulados não podem ser alterados e que utilizadores sem papel autorizado recebem 403.
+3. Testar tentativas com cliente/artigo/template de outro tenant.
+4. Testar duas actualizações concorrentes do mesmo rascunho e confirmar que a função SQL mantém a integridade.
+5. Investigar a origem de `location` no chunk SSR e corrigir sem ocultar o erro.
+6. Prosseguir para PDF/arquivo privado e testes de emissão/rectificação/pagamento.

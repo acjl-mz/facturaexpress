@@ -233,3 +233,10 @@ Confirmar o deployment final associado ao último commit, rever warnings/errors,
 - A emissão continua bloqueada na ausência de autorização formal. Não inserir registos fictícios nem activar emissão para testes.
 - Não foi obtido da AT o layout oficial de comunicação mensal, XSD/SAF-T (Moz), casos de teste, nem decisão de certificação. Sem estes artefactos externos, esses blocos não podem ser tecnicamente finalizados nem declarados aprovados.
 - A pontuação global permanece **47%**. O trabalho desta secção é auditoria, correcção de escopo de leitura e formalização de bloqueadores; não representa aprovação AT nem teste de aceitação.
+
+
+### Complemento — controlo da versão submetida à autorização
+- A rota de emissão passou a obter a versão a partir de `package.json`, em vez de repetir o literal `0.1.0`.
+- Commit: `4000d20c4fe410ea63bb91dfbc291ce7447add6f`.
+- Registado no mapa AT no commit `efe4161`.
+- Build/deployment deste commit ainda por confirmar; pontuação global inalterada em **47%**.

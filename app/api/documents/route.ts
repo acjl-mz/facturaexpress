@@ -114,3 +114,69 @@ export async function POST(req:NextRequest){
   return NextResponse.json({id,status:"draft",message:"Rascunho criado. Os impostos e totais foram calculados pelo motor fiscal no Supabase."},{status:201});
  }catch(e){console.error("Draft creation failed",e);return NextResponse.json({error:"Não foi possível preparar o documento."},{status:400});}
 }
+
+
+export async function PATCH(req:NextRequest){
+ const user=await getSession();
+ if(!user)return NextResponse.json({error:"Não autenticado."},{status:401});
+ if(!["owner","admin","issuer","accountant"].includes(user.role))return NextResponse.json({error:"Sem permissão para alterar documentos."},{status:403});
+ try{
+  const b=await req.json();
+  const documentId=String(b.id||"");
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(documentId))
+   return NextResponse.json({error:"Identificador do documento inválido."},{status:400});
+  if(!Array.isArray(b.lines)||b.lines.length<1||b.lines.length>100)
+   return NextResponse.json({error:"O documento deve conter entre 1 e 100 linhas."},{status:400});
+  const dueDate=b.dueDate===null||b.dueDate===""?null:String(b.dueDate);
+  if(dueDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)||Number.isNaN(Date.parse(dueDate+"T00:00:00Z"))))
+   return NextResponse.json({error:"Data de vencimento inválida."},{status:400});
+  const notes=String(b.notes||"");
+  if(notes.length>2000)return NextResponse.json({error:"As observações não podem exceder 2.000 caracteres."},{status:400});
+  const lines=b.lines.map((line:any)=>({
+   item_id:line.itemId||null,
+   description:String(line.description||"").trim(),
+   quantity:Number(line.quantity),
+   unit:String(line.unit||"UN").trim(),
+   unit_price:Number(line.unitPrice),
+   discount_amount:Number(line.discount||0),
+   tax_code:line.taxCode||null,
+   tax_eligibility_reference:line.taxEligibilityReference||null,
+   tax_eligibility_category:line.taxEligibilityCategory||null
+  }));
+  if(lines.some((line:any)=>!line.description||line.description.length>500||!Number.isFinite(line.quantity)||line.quantity<=0||line.quantity>100000000||!Number.isFinite(line.unit_price)||line.unit_price<0||line.unit_price>1000000000000||!Number.isFinite(line.discount_amount)||line.discount_amount<0||line.discount_amount>1000000000000||!line.unit||line.unit.length>20))
+   return NextResponse.json({error:"Existem linhas com descrição, quantidade, unidade, preço ou desconto inválidos."},{status:400});
+  const db=await createClient();
+  const {data:document,error:documentError}=await db.from("fiscal_documents").select("id,status,document_type").eq("id",documentId).eq("tenant_id",user.tenantId).maybeSingle();
+  if(documentError)return NextResponse.json({error:"Não foi possível validar o documento."},{status:500});
+  if(!document)return NextResponse.json({error:"Documento não encontrado."},{status:404});
+  if(document.status!=="draft")return NextResponse.json({error:"Apenas rascunhos podem ser alterados."},{status:409});
+  if(b.templateId){
+   const {data:template,error:templateError}=await db.from("invoice_templates").select("id").eq("id",b.templateId).eq("tenant_id",user.tenantId).eq("is_active",true).maybeSingle();
+   if(templateError)return NextResponse.json({error:"Não foi possível validar o modelo visual."},{status:500});
+   if(!template)return NextResponse.json({error:"O modelo visual seleccionado não está disponível nesta empresa."},{status:400});
+  }
+  const {data:id,error}=await db.rpc("update_fiscal_document_draft",{
+   p_document_id:documentId,
+   p_customer_id:b.customerId||null,
+   p_due_date:dueDate,
+   p_notes:notes,
+   p_lines:lines
+  });
+  if(error){
+   console.error("Draft update RPC failed",error.message);
+   return NextResponse.json({error:error.message||"Não foi possível actualizar o rascunho."},{status:400});
+  }
+  let warning:string|undefined;
+  if(b.templateId!==undefined){
+   const {error:templateUpdateError}=await db.from("fiscal_documents").update({invoice_template_id:b.templateId||null}).eq("id",documentId).eq("tenant_id",user.tenantId).eq("status","draft");
+   if(templateUpdateError){
+    console.error("Draft template update failed",templateUpdateError.message);
+    warning="Os dados e os valores fiscais foram actualizados, mas não foi possível guardar o modelo visual seleccionado.";
+   }
+  }
+  return NextResponse.json({id:id||documentId,status:"draft",message:"Rascunho actualizado. Os impostos e totais foram recalculados no Supabase.",...(warning?{warning}:{})});
+ }catch(e){
+  console.error("Draft update failed",e);
+  return NextResponse.json({error:"Não foi possível actualizar o rascunho."},{status:400});
+ }
+}

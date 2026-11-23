@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- Tenant-provided logo URLs are dynamic and configured per organisation. */
 import {useEffect,useMemo,useState,type CSSProperties} from "react";
 import {useParams,useRouter} from "next/navigation";
 import {ArrowLeft,Download,Printer,ShieldAlert,ShieldCheck,Pencil,Copy,FileCheck2} from "lucide-react";

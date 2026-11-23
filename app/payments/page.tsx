@@ -1,5 +1,5 @@
 "use client";
-import {useCallback,useEffect,useMemo,useRef,useState, type FormEvent} from "react";import {useRouter} from "next/navigation";import {ArrowLeft,CheckCircle2,ChevronRight,Clock3,CreditCard,FileText,Plus,Receipt,RefreshCw,Search,ShieldAlert,X} from "lucide-react";
+import {useCallback,useEffect,useMemo,useRef,useState, type FormEvent} from "react";import {useRouter} from "next/navigation";import {ArrowLeft,ChevronRight,Plus,Receipt,RefreshCw,Search,ShieldAlert,X} from "lucide-react";
 type Doc={id:string;document_type:string;document_number:string;status:string;issue_date:string|null;due_date:string|null;currency:string;grand_total:number;withholding_total:number;paid_total:number;balance:number;customers:{name:string;nuit?:string}|null};
 type Payment={id:string;document_id:string;internal_receipt_code:string;amount:number;payment_method:string;payment_reference:string|null;received_at:string;notes:string|null};
 const methods=[["cash","Numerário"],["bank_transfer","Transferência bancária"],["mobile_money","Carteira móvel"],["pos","POS"],["cheque","Cheque"],["other","Outro"]];

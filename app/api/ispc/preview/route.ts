@@ -9,4 +9,4 @@ export async function POST(req:NextRequest){const u=await getSession();if(!u)ret
  const {data:saved,error:saveError}=await s.from("ispc_quarterly_assessments").upsert(payload,{onConflict:"tenant_id,tax_year,quarter"}).select().single();
  if(saveError)throw saveError;
  await s.from("tax_obligations").update({status:"in_progress",updated_at:new Date().toISOString()}).eq("tenant_id",u.tenantId).eq("tax_type","ISPC").eq("reference_period",String(year)+"-T"+String(quarter)).in("status",["pending","in_progress"]);
- return NextResponse.json({preview:data,assessment:saved});}catch(e){return NextResponse.json({error:"Não foi possível calcular a prévia ISPC."},{status:400});}}
+ return NextResponse.json({preview:data,assessment:saved});}catch{return NextResponse.json({error:"Não foi possível calcular a prévia ISPC."},{status:400});}}

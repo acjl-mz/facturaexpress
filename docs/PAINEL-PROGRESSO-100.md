@@ -221,3 +221,15 @@ Confirmar o deployment final associado ao último commit, rever warnings/errors,
 4. Testar duas actualizações concorrentes do mesmo rascunho e confirmar que a função SQL mantém a integridade.
 5. Investigar a origem de `location` no chunk SSR e corrigir sem ocultar o erro.
 6. Prosseguir para PDF/arquivo privado e testes de emissão/rectificação/pagamento.
+
+
+## 10. Auditoria de preparação AT — 23/11/2026
+
+- Actualizada a matriz de preparação AT em `docs/MAPA-SISTEMA-E-PREPARACAO-AT-2026-11-15.md`, com reauditoria da função de emissão, autorização, comunicação mensal, SAF-T (Moz), produtor, dossier e gates formais.
+- Consulta directa Supabase: `tenant_fiscal_authorizations` tem **0 registos**.
+- Inspecção da RPC `issue_fiscal_document`: verifica autorização aprovada e versão exacta, mas selecciona o tenant pela primeira associação do utilizador (`ORDER BY created_at LIMIT 1`). É um bloqueador técnico crítico para utilizadores multiempresa; exige correcção e testes antes de qualquer emissão.
+- Corrigida a rota `/api/system-info` para filtrar a autorização pelo tenant activo e a ficha técnica para mostrar ausência, correspondência ou divergência de versão.
+- Commits desta actualização: `f54689a` (consulta de autorização tenant-scoped), `e840e13` (estado da autorização na ficha), `9de4613` (matriz AT).
+- A emissão continua bloqueada na ausência de autorização formal. Não inserir registos fictícios nem activar emissão para testes.
+- Não foi obtido da AT o layout oficial de comunicação mensal, XSD/SAF-T (Moz), casos de teste, nem decisão de certificação. Sem estes artefactos externos, esses blocos não podem ser tecnicamente finalizados nem declarados aprovados.
+- A pontuação global permanece **47%**. O trabalho desta secção é auditoria, correcção de escopo de leitura e formalização de bloqueadores; não representa aprovação AT nem teste de aceitação.

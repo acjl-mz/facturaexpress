@@ -333,3 +333,97 @@ Não apresentar esta função como “comunicação AT concluída”. A substitu
 - Governo — aprovação de alterações aos regulamentos fiscais em Setembro de 2026: https://portaldogoverno.gov.mz/governo-introduz-alteracoes-aos-regulamentos-fiscais-para-reforcar-eficiencia-tributaria/
 
 **Nota de actualização:** fontes online podem ser actualizadas. Antes de cada release fiscal, confirmar novamente a publicação oficial e a vigência de cada diploma.
+
+
+## 10. Reauditoria orientada à aprovação — 23/11/2026
+
+Esta secção actualiza o estado observado no repositório e na base Supabase nesta data. Não substitui os textos legais integrais nem qualquer resposta formal da AT.
+
+### 10.1 Evidência directa da autorização
+
+Consulta directa à tabela `public.tenant_fiscal_authorizations` no projecto Supabase de produção:
+- Colunas existentes: `tenant_id`, `status`, `authorization_reference`, `authorization_date`, `approved_software_version`, `evidence_note`, `updated_by`, `updated_at`.
+- Registos encontrados: **0**.
+- Consequência: nenhuma empresa tem autorização registada nesta tabela; não existe base para declarar o FacturaExpress autorizado.
+
+A função `public.issue_fiscal_document(uuid,text)` foi inspeccionada directamente. Confirma:
+- exige sessão Supabase autenticada;
+- exige papel `owner`, `admin`, `issuer` ou `accountant`;
+- exige documento em rascunho, tipo FT/FR, série activa e dados mínimos;
+- verifica autorização `approved`, referência, data e igualdade exacta de `approved_software_version` com a versão recebida;
+- guarda versão e referência de autorização no snapshot;
+- reserva número de série sob bloqueio transaccional e grava eventos/auditoria.
+
+**Bloqueio crítico detectado na mesma função:** a escolha de empresa é feita por `ORDER BY tu.created_at LIMIT 1`, e não pelo tenant activo usado pela sessão da aplicação. Um utilizador associado a mais de uma empresa pode ter o contexto errado seleccionado. A função tem `SECURITY DEFINER`. Não se deve habilitar emissão multiempresa nem tentar contornar o bloqueio antes de corrigir o contexto de tenant e testar chamadas directas/RPC. A correcção requer uma decisão técnica consistente sobre como o tenant activo é passado e validado dentro da transacção; não deve ser improvisada por uma alteração de SQL isolada.
+
+### 10.2 Correcção aplicada nesta auditoria
+
+- `GET /api/system-info` passou a consultar a autorização com filtro explícito `tenant_id = user.tenantId`, evitando apresentar à empresa activa o registo de outra empresa.
+- A ficha técnica passou a distinguir autorização aprovada para a versão instalada, versão divergente e ausência de autorização.
+- A alteração é apenas de leitura/diagnóstico. Não cria autorização, não altera dados de certificação e não desbloqueia emissão.
+
+### 10.3 Matriz de fecho — critérios que têm de estar provados
+
+| Bloco para AT | Estado após auditoria | Evidência / condição de fecho |
+|---|---|---|
+| Identificação do produtor | **Aberto** | Denominação legal, NUIT, endereço, contacto e responsável do produtor por confirmar e inserir como dados do produtor |
+| Identificação do produto | Parcial | Nome e versão declarada existem; fixar build, hash de artefacto, release e manual |
+| Autorização da AT | **Bloqueado** | 0 registos Supabase; pedido, avaliação e decisão formal ainda necessários |
+| Correspondência versão-autorização | Parcial | RPC compara versão exacta; validar processo de actualização e reavaliação pela AT |
+| Contexto multiempresa na emissão | **Bloqueador técnico crítico** | RPC escolhe primeira associação do utilizador; corrigir tenant activo, testar membro de várias empresas e chamadas directas |
+| FT/FR | Parcial | Motor de emissão para FT/FR existe; modelos, campos, menções e cenários legais aguardam validação documental e testes |
+| PF/NC/ND | **Aberto** | UI/tipos existem, mas emissão fiscal geral não habilitada; confirmar modelos e fluxos oficiais antes de habilitar |
+| Séries e numeração | Parcial | Reserva transaccional existe; regras AT de série, exercício, estabelecimento, contingência e inutilização por confirmar |
+| Imutabilidade e auditoria | Parcial | Snapshot/eventos/auditoria existem; falta provar por testes que não há edição/eliminação e que cadeia rectificativa é íntegra |
+| PDF e arquivo fiscal | **Aberto** | Não foi demonstrado PDF final imutável com hash e Storage privado associado à emissão e reprodução do snapshot |
+| Comunicação mensal | **Bloqueado por especificação** | CSV actual é preliminar e não oficial; falta layout/dicionário AT, limites, compressão, fraccionamento, validação e prova de submissão |
+| SAF-T (Moz) | **Bloqueado por especificação** | Exportador/XSD/validador oficial e casos de teste não foram encontrados |
+| IVA 2026 | **Parcial / risco elevado** | Base observada anteriormente só demonstrava regras 16% e 5%; matriz integral, excepções, operações digitais e dedutibilidade por validar |
+| ISPC 2026 | Parcial | Catálogo e taxas existem; conciliação integral com documentos, regras transitórias e regulamento integral por validar |
+| IRPS/IRPC | Parcial | Retenções manuais não equivalem a motor integral nem a modelos oficiais |
+| Segurança Supabase | **Aberto** | Rever funções SECURITY DEFINER, privilégios EXECUTE, RLS e isolamento multiempresa; corrigir selecção de tenant |
+| Testes de aceitação AT | **Não executados** | Ficheiros, cenários e ambiente de teste oficiais ainda não fornecidos |
+| Dossier formal | Parcial | Mapa de sistema existe; faltam dados do produtor, manuais finais, artefactos, casos/resultados de teste e correspondência/decisão AT |
+
+### 10.4 Requisitos documentais a solicitar formalmente à AT
+
+Solicitar por escrito à AT/DGI, guardando pedido, resposta, anexos e datas:
+1. Procedimento vigente de registo, certificação ou autorização de software de facturação e enquadramento do Despacho Ministerial de 29/02/2012.
+2. Requisitos de impressão: modelos e campos obrigatórios, menções, formato, legibilidade, cópias, conservação e reprodução.
+3. Regras oficiais de séries, numeração, exercícios, estabelecimentos, dispositivos, contingência, inutilização e recuperação.
+4. Especificação actual do ficheiro mensal de dados de facturação: layout, dicionário, tipos, obrigatoriedade, encoding, delimitadores, tamanho, compressão, fraccionamento, prazo, canal, recibo e rejeições.
+5. Especificação SAF-T (Moz): versão, XSD, taxonomias, códigos, ficheiros exemplo, validações, regras de assinatura/selagem se aplicáveis e ambiente de testes.
+6. Regra actualmente aplicável ao ISPC e eventuais exclusões/dispensas de comunicação.
+7. Modelos e fluxos oficiais de FT, FR, factura simplificada/pronto pagamento, notas de crédito/débito, recibos e demais documentos aplicáveis.
+8. Procedimento de submissão de versão, testes de aceitação, correcção de não conformidades, renovação e efeitos de actualizações.
+9. Textos integrais e vigência dos regulamentos fiscais publicados após a reforma de 2025, incluindo os aprovados/anunciados em 2026.
+
+Não inventar XSD, estrutura, API, certificados, chaves, assinaturas, códigos fiscais ou respostas da AT. Se a AT só permitir submissão manual, o produto deve preparar o ficheiro e o respectivo controlo de lote sem simular uma integração automática.
+
+### 10.5 Dossier de apresentação — índice mínimo
+
+1. Requerimento e identificação legal do produtor.
+2. Identificação do produto, edição, versão, build, hash e ambiente.
+3. Arquitectura técnica, fluxos de dados, Supabase, controlo de acesso e isolamento de empresas.
+4. Manual de instalação, configuração, operação, emissão, reimpressão, arquivo, cópia de segurança e recuperação.
+5. Manual de utilizador e matriz de papéis/permissões.
+6. Especificação dos documentos e modelos de impressão.
+7. Regras de séries, numeração, estados, correcções, anulações e contingência.
+8. Motor fiscal: matriz de regras, fontes legais, datas de vigência, parametrização e histórico.
+9. Comunicação mensal e SAF-T (Moz), cada um com a especificação oficial correspondente.
+10. Segurança: RLS, privilégios, funções privilegiadas, auditoria, gestão de credenciais e resposta a incidentes.
+11. Plano de testes, dados de teste, casos, resultados, evidências e não conformidades corrigidas.
+12. Correspondência com AT, submissão, actas de teste, decisão, âmbito e versão autorizada.
+
+### 10.6 Gate de aprovação — sem atalhos
+
+O bloco AT só pode ser marcado como concluído quando:
+- todos os requisitos oficiais aplicáveis tiverem fonte, versão e interpretação registadas;
+- a implementação corresponder às especificações oficiais;
+- os testes técnicos e de aceitação estiverem executados e documentados;
+- o produtor tiver submetido o dossier exigido;
+- a AT tiver emitido decisão/documento formal que identifique produtor, produto, versão e âmbito;
+- a autorização estiver registada para a empresa/instância aplicável e versão exacta;
+- o sistema continuar a bloquear emissão quando a autorização faltar, expirar, for suspensa ou não corresponder à versão.
+
+**Estado em 23/11/2026:** preparação técnica em curso; não autorizado/certificado. O bloco AT permanece aberto e não pode ser apresentado como finalizado.
